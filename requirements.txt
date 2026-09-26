@@ -1,0 +1,79 @@
+mkdir LAN-CHAT
+cd LAN-CHAT
+
+mkdir server
+cd server
+
+mkdir templates
+mkdir static
+mkdir static\css
+mkdir static\js
+mkdir database
+
+type nul > app.py
+type nul > config.json
+type nul > database.py
+type nul > models.py
+
+type nul > templates\login.html
+type nul > templates\chat.html
+type nul > templates\admin_login.html
+type nul > templates\dashboard.html
+
+type nul > static\css\style.css
+type nul > static\js\chat.js
+
+cd ..
+
+
+
+
+cd LAN-CHAT
+
+cd server
+python -m venv venv
+
+venv\Scripts\activate
+
+pip install flask flask-sqlalchemy flask-socketio werkzeug
+
+
+
+
+
+
+// Run: 
+
+cd LAN-CHAT\server
+venv\Scripts\activate
+python app.py
+
+
+
+
+
+
+
+
+>> SQlite:
+
+download extention > opend chat.dp > in search: 
+   >sqlite:focous on sqlite in explorer 
+
+
+
+cd C:\Users\CompuMisr\Desktop\ChatME\LAN-CHAT\server
+venv\Scripts\activate
+python -m pip install -U flask-socketio python-socketio python-engineio simple-websocket
+
+
+
+
+python -m pip show flask-socketio
+python -m pip show python-socketio
+python -m pip show simple-websocket
+
+
+
+.
+
