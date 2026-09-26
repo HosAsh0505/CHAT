@@ -1,0 +1,3700 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>ROOT // SYSTEM CONTROL</title>
+
+    <!-- SOCKET.IO -->
+    <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            min-height: 100%;
+        }
+
+        body {
+
+            background:
+                radial-gradient(
+                    circle at 20% 0%,
+                    #102019 0%,
+                    #050806 38%,
+                    #020303 100%
+                );
+
+            color: #d8ffe9;
+
+            font-family:
+                "Courier New",
+                Consolas,
+                monospace;
+
+            overflow-x: hidden;
+        }
+
+        body::before {
+
+            content: "";
+
+            position: fixed;
+
+            inset: 0;
+
+            background:
+                linear-gradient(
+                    rgba(80,255,154,0.025) 1px,
+                    transparent 1px
+                );
+
+            background-size: 100% 4px;
+
+            pointer-events: none;
+
+            z-index: 999;
+        }
+
+
+        /* =====================================================
+           TOP BAR
+        ===================================================== */
+
+        .topbar {
+
+            height: 64px;
+
+            border-bottom:
+                1px solid rgba(80,255,154,0.25);
+
+            background:
+                rgba(3,7,5,0.94);
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            padding: 0 25px;
+
+            position: sticky;
+
+            top: 0;
+
+            z-index: 100;
+        }
+
+        .brand {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 13px;
+        }
+
+        .logo {
+
+            width: 34px;
+
+            height: 34px;
+
+            border:
+                1px solid #50ff9a;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            color: #50ff9a;
+
+            box-shadow:
+                0 0 12px rgba(80,255,154,0.15);
+        }
+
+        .brand-title {
+
+            color: #50ff9a;
+
+            font-weight: bold;
+
+            letter-spacing: 2px;
+        }
+
+        .brand-sub {
+
+            color: #50635a;
+
+            font-size: 9px;
+
+            margin-top: 3px;
+        }
+
+        .admin-info {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 18px;
+
+            font-size: 11px;
+        }
+
+        .admin-user {
+
+            color: #42dfff;
+        }
+
+        .logout {
+
+            color: #ff5364;
+
+            border:
+                1px solid rgba(255,83,100,0.35);
+
+            padding: 7px 12px;
+
+            text-decoration: none;
+
+            transition: 0.2s;
+        }
+
+        .logout:hover {
+
+            background:
+                rgba(255,83,100,0.12);
+
+            border-color: #ff5364;
+        }
+
+
+        /* =====================================================
+           LIVE STATUS
+        ===================================================== */
+
+        .live-status {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 6px;
+
+            color: #50ff9a;
+
+            font-size: 9px;
+
+            letter-spacing: 1px;
+        }
+
+        .live-dot {
+
+            width: 7px;
+
+            height: 7px;
+
+            border-radius: 50%;
+
+            background: #50ff9a;
+
+            box-shadow:
+                0 0 8px #50ff9a;
+
+            animation: pulse 1.4s infinite;
+        }
+
+        .live-status.offline {
+
+            color: #ff5364;
+        }
+
+        .live-status.offline .live-dot {
+
+            background: #ff5364;
+
+            box-shadow:
+                0 0 8px #ff5364;
+
+            animation: none;
+        }
+
+        @keyframes pulse {
+
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.25;
+            }
+
+            100% {
+                opacity: 1;
+            }
+
+        }
+
+
+        /* =====================================================
+           LAYOUT
+        ===================================================== */
+
+        .layout {
+
+            display: grid;
+
+            grid-template-columns: 210px 1fr;
+
+            min-height:
+                calc(100vh - 64px);
+        }
+
+        .sidebar {
+
+            border-right:
+                1px solid rgba(80,255,154,0.15);
+
+            background:
+                rgba(3,7,5,0.7);
+
+            padding: 22px 13px;
+        }
+
+        .nav-label {
+
+            color: #3d5147;
+
+            font-size: 9px;
+
+            letter-spacing: 2px;
+
+            margin: 8px 10px 14px;
+        }
+
+        .nav {
+
+            display: block;
+
+            padding: 12px;
+
+            margin-bottom: 5px;
+
+            color: #718279;
+
+            text-decoration: none;
+
+            border-left:
+                2px solid transparent;
+
+            font-size: 11px;
+
+            transition: 0.2s;
+        }
+
+        .nav:hover,
+        .nav.active {
+
+            color: #50ff9a;
+
+            background:
+                rgba(80,255,154,0.05);
+
+            border-left-color: #50ff9a;
+        }
+
+        .nav span {
+
+            display: inline-block;
+
+            width: 22px;
+
+            color: #42dfff;
+        }
+
+        .main {
+
+            padding: 28px;
+
+            min-width: 0;
+        }
+
+
+        /* =====================================================
+           PAGE HEADER
+        ===================================================== */
+
+        .page-header {
+
+            margin-bottom: 25px;
+        }
+
+        .page-header .path {
+
+            color: #42dfff;
+
+            font-size: 10px;
+
+            margin-bottom: 7px;
+        }
+
+        .page-header h1 {
+
+            margin: 0;
+
+            color: #50ff9a;
+
+            font-size: 25px;
+
+            letter-spacing: 1px;
+        }
+
+        .page-header p {
+
+            color: #52635a;
+
+            font-size: 10px;
+
+            margin-top: 7px;
+        }
+
+
+        /* =====================================================
+           STATS
+        ===================================================== */
+
+        .stats {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(5, minmax(130px, 1fr));
+
+            gap: 12px;
+
+            margin-bottom: 25px;
+        }
+
+        .stat {
+
+            background:
+                rgba(6,13,10,0.9);
+
+            border:
+                1px solid #172a21;
+
+            padding: 17px;
+
+            position: relative;
+
+            transition: 0.2s;
+        }
+
+        .stat.flash {
+
+            box-shadow:
+                0 0 18px rgba(80,255,154,0.16);
+
+            border-color:
+                rgba(80,255,154,0.45);
+        }
+
+        .stat::before {
+
+            content: "";
+
+            position: absolute;
+
+            top: 0;
+
+            left: 0;
+
+            width: 100%;
+
+            height: 2px;
+
+            background: #50ff9a;
+
+            opacity: 0.6;
+        }
+
+        .stat.blue::before {
+            background: #42dfff;
+        }
+
+        .stat.yellow::before {
+            background: #ffd166;
+        }
+
+        .stat.red::before {
+            background: #ff5364;
+        }
+
+        .stat-label {
+
+            color: #53665b;
+
+            font-size: 9px;
+
+            letter-spacing: 1px;
+        }
+
+        .stat-value {
+
+            color: #d8ffe9;
+
+            font-size: 27px;
+
+            font-weight: bold;
+
+            margin-top: 8px;
+
+            transition: 0.15s;
+        }
+
+        .stat-meta {
+
+            color: #50ff9a;
+
+            font-size: 8px;
+
+            margin-top: 5px;
+        }
+
+
+        /* =====================================================
+           GRID / PANELS
+        ===================================================== */
+
+        .grid {
+
+            display: grid;
+
+            grid-template-columns:
+                1.2fr 1fr;
+
+            gap: 15px;
+
+            margin-bottom: 15px;
+        }
+
+        .panel {
+
+            background:
+                rgba(5,11,8,0.9);
+
+            border:
+                1px solid #172a21;
+
+            min-width: 0;
+        }
+
+        .panel-header {
+
+            padding: 13px 15px;
+
+            border-bottom:
+                1px solid #172a21;
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+        }
+
+        .panel-title {
+
+            color: #42dfff;
+
+            font-size: 10px;
+
+            letter-spacing: 1px;
+        }
+
+        .panel-tag {
+
+            color: #50ff9a;
+
+            font-size: 8px;
+        }
+
+        .panel-body {
+
+            padding: 0;
+
+            overflow-x: auto;
+        }
+
+        table {
+
+            width: 100%;
+
+            border-collapse: collapse;
+
+            font-size: 9px;
+        }
+
+        th {
+
+            text-align: left;
+
+            color: #4e6257;
+
+            font-weight: normal;
+
+            padding: 10px 12px;
+
+            border-bottom:
+                1px solid #132019;
+
+            white-space: nowrap;
+        }
+
+        td {
+
+            padding: 10px 12px;
+
+            border-bottom:
+                1px solid #0e1813;
+
+            color: #91a69a;
+
+            white-space: nowrap;
+        }
+
+        tr:hover td {
+
+            background:
+                rgba(80,255,154,0.025);
+        }
+
+        .online {
+
+            color: #50ff9a;
+        }
+
+        .offline {
+
+            color: #596a62;
+        }
+
+        .event {
+
+            color: #42dfff;
+        }
+
+        .login {
+
+            color: #50ff9a;
+        }
+
+        .logout-event {
+
+            color: #ffd166;
+        }
+
+        .failed {
+
+            color: #ff5364;
+        }
+
+
+        /* =====================================================
+           LIVE ROW
+        ===================================================== */
+
+        .live-row {
+
+            animation:
+                liveRow 0.5s ease;
+        }
+
+        @keyframes liveRow {
+
+            from {
+
+                background:
+                    rgba(80,255,154,0.16);
+
+            }
+
+            to {
+
+                background:
+                    transparent;
+
+            }
+
+        }
+
+
+        /* =====================================================
+           BOTTOM GRID
+        ===================================================== */
+
+        .bottom-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                1fr 1fr;
+
+            gap: 15px;
+        }
+
+        .empty {
+
+            padding: 30px;
+
+            text-align: center;
+
+            color: #35443c;
+
+            font-size: 10px;
+        }
+
+
+        /* =====================================================
+           USER ACTION BUTTONS
+        ===================================================== */
+
+        .user-action {
+
+            background:
+                transparent;
+
+            font-family:
+                "Courier New",
+                Consolas,
+                monospace;
+
+            font-size: 8px;
+
+            padding: 5px 7px;
+
+            margin-right: 4px;
+
+            cursor: pointer;
+
+            transition: 0.2s;
+        }
+
+        .user-action.reset {
+
+            color: #ffd166;
+
+            border:
+                1px solid rgba(255,209,102,0.35);
+        }
+
+        .user-action.reset:hover {
+
+            color: #050806;
+
+            background: #ffd166;
+
+            border-color: #ffd166;
+        }
+
+        .user-action.delete {
+
+            color: #ff5364;
+
+            border:
+                1px solid rgba(255,83,100,0.35);
+        }
+
+        .user-action.delete:hover {
+
+            color: #050806;
+
+            background: #ff5364;
+
+            border-color: #ff5364;
+        }
+
+
+        /* =====================================================
+           PASSWORD RESET MODAL
+        ===================================================== */
+
+        .modal {
+
+            position: fixed;
+
+            inset: 0;
+
+            background:
+                rgba(0,0,0,0.78);
+
+            display: none;
+
+            align-items: center;
+
+            justify-content: center;
+
+            z-index: 2000;
+        }
+
+        .modal.active {
+
+            display: flex;
+        }
+
+        .modal-box {
+
+            width: 420px;
+
+            max-width:
+                calc(100vw - 30px);
+
+            background:
+                #050b08;
+
+            border:
+                1px solid rgba(80,255,154,0.4);
+
+            box-shadow:
+                0 0 40px rgba(0,0,0,0.8);
+
+            padding: 22px;
+        }
+
+        .modal-title {
+
+            color: #50ff9a;
+
+            font-size: 13px;
+
+            letter-spacing: 2px;
+
+            margin-bottom: 18px;
+        }
+
+        .modal-user {
+
+            color: #42dfff;
+
+            font-size: 10px;
+
+            margin-bottom: 15px;
+        }
+
+        .modal-input {
+
+            width: 100%;
+
+            background:
+                #020504;
+
+            color: #d8ffe9;
+
+            border:
+                1px solid #1b3026;
+
+            padding: 11px;
+
+            outline: none;
+
+            font-family:
+                "Courier New",
+                Consolas,
+                monospace;
+
+            margin-bottom: 10px;
+        }
+
+        .modal-input:focus {
+
+            border-color: #50ff9a;
+
+            box-shadow:
+                0 0 10px rgba(80,255,154,0.12);
+        }
+
+        .modal-buttons {
+
+            display: flex;
+
+            gap: 8px;
+
+            margin-top: 12px;
+        }
+
+        .modal-button {
+
+            flex: 1;
+
+            padding: 10px;
+
+            background:
+                transparent;
+
+            font-family:
+                "Courier New",
+                Consolas,
+                monospace;
+
+            cursor: pointer;
+        }
+
+        .modal-button.confirm {
+
+            color: #50ff9a;
+
+            border:
+                1px solid rgba(80,255,154,0.4);
+        }
+
+        .modal-button.generate {
+
+            color: #42dfff;
+
+            border:
+                1px solid rgba(66,223,255,0.4);
+        }
+
+        .modal-button.cancel {
+
+            color: #718279;
+
+            border:
+                1px solid #25372e;
+        }
+
+        .modal-button:hover {
+
+            background:
+                rgba(80,255,154,0.07);
+        }
+
+        .password-result {
+
+            display: none;
+
+            margin-top: 15px;
+
+            padding: 12px;
+
+            border:
+                1px solid rgba(255,209,102,0.35);
+
+            background:
+                rgba(255,209,102,0.04);
+        }
+
+        .password-result-title {
+
+            color: #ffd166;
+
+            font-size: 9px;
+
+            margin-bottom: 8px;
+        }
+
+        .password-result-value {
+
+            color: #50ff9a;
+
+            font-size: 16px;
+
+            font-weight: bold;
+
+            word-break: break-all;
+
+            user-select: all;
+        }
+
+
+        /* =====================================================
+           LIVE FEED
+        ===================================================== */
+
+        .live-feed {
+
+            position: fixed;
+
+            right: 20px;
+
+            bottom: 20px;
+
+            width: 330px;
+
+            max-width:
+                calc(100vw - 40px);
+
+            z-index: 1000;
+
+            pointer-events: none;
+        }
+
+        .feed-item {
+
+            background:
+                rgba(3,10,7,0.96);
+
+            border:
+                1px solid rgba(80,255,154,0.35);
+
+            border-left:
+                3px solid #50ff9a;
+
+            padding: 10px 12px;
+
+            margin-top: 8px;
+
+            box-shadow:
+                0 0 18px rgba(0,0,0,0.45);
+
+            animation:
+                feedIn 0.25s ease;
+
+            font-size: 9px;
+        }
+
+        .feed-event {
+
+            color: #50ff9a;
+
+            font-weight: bold;
+
+            letter-spacing: 1px;
+        }
+
+        .feed-text {
+
+            color: #91a69a;
+
+            margin-top: 4px;
+        }
+
+        .feed-time {
+
+            color: #43564c;
+
+            margin-top: 5px;
+        }
+
+        @keyframes feedIn {
+
+            from {
+
+                opacity: 0;
+
+                transform:
+                    translateX(25px);
+
+            }
+
+            to {
+
+                opacity: 1;
+
+                transform:
+                    translateX(0);
+
+            }
+
+        }
+
+
+        /* =====================================================
+           RESPONSIVE
+        ===================================================== */
+
+        @media (max-width: 1050px) {
+
+            .stats {
+
+                grid-template-columns:
+                    repeat(3, 1fr);
+
+            }
+
+            .grid,
+            .bottom-grid {
+
+                grid-template-columns:
+                    1fr;
+
+            }
+
+        }
+
+
+        @media (max-width: 750px) {
+
+            .layout {
+
+                grid-template-columns:
+                    1fr;
+
+            }
+
+            .sidebar {
+
+                display: none;
+
+            }
+
+            .main {
+
+                padding: 15px;
+
+            }
+
+            .stats {
+
+                grid-template-columns:
+                    repeat(2, 1fr);
+
+            }
+
+            .admin-info {
+
+                gap: 8px;
+
+            }
+
+            .brand-sub {
+
+                display: none;
+
+            }
+
+            .live-status {
+
+                display: none;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     TOP BAR
+===================================================== -->
+
+<header class="topbar">
+
+    <div class="brand">
+
+        <div class="logo">
+            #
+        </div>
+
+        <div>
+
+            <div class="brand-title">
+                SYSTEM CONTROL
+            </div>
+
+            <div class="brand-sub">
+                LAN-CHAT // ADMINISTRATIVE INTERFACE
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="admin-info">
+
+        <div
+            class="live-status"
+            id="liveStatus"
+        >
+
+            <span class="live-dot"></span>
+
+            LIVE
+
+        </div>
+
+
+        <div>
+
+            ADMIN:
+
+            <span class="admin-user">
+                {{ admin_username }}
+            </span>
+
+        </div>
+
+
+        <a
+            class="logout"
+            href="{{ url_for('admin.admin_logout') }}"
+        >
+            [ LOGOUT ]
+        </a>
+
+    </div>
+
+</header>
+
+
+<!-- =====================================================
+     MAIN LAYOUT
+===================================================== -->
+
+<div class="layout">
+
+
+<!-- =====================================================
+     SIDEBAR
+===================================================== -->
+
+<aside class="sidebar">
+
+    <div class="nav-label">
+        SYSTEM
+    </div>
+
+
+    <a
+        href="#overview"
+        class="nav active"
+        data-section="overview"
+    >
+        <span>01</span>
+        OVERVIEW
+    </a>
+
+
+    <a
+        href="#users"
+        class="nav"
+        data-section="users"
+    >
+        <span>02</span>
+        USERS
+    </a>
+
+
+    <a
+        href="#messages"
+        class="nav"
+        data-section="messages"
+    >
+        <span>03</span>
+        MESSAGES
+    </a>
+
+
+    <a
+        href="#sessions"
+        class="nav"
+        data-section="sessions"
+    >
+        <span>04</span>
+        SESSIONS
+    </a>
+
+
+    <a
+        href="#audit"
+        class="nav"
+        data-section="audit"
+    >
+        <span>05</span>
+        AUDIT LOG
+    </a>
+
+</aside>
+
+
+<!-- =====================================================
+     MAIN
+===================================================== -->
+
+<main
+    class="main"
+    id="overview"
+>
+
+
+    <!-- =================================================
+         HEADER
+    ================================================= -->
+
+    <div class="page-header">
+
+        <div class="path">
+            root@lan-chat:/system/dashboard
+        </div>
+
+        <h1>
+            SYSTEM OVERVIEW
+        </h1>
+
+        <p>
+            Real-time administrative monitoring interface.
+        </p>
+
+    </div>
+
+
+    <!-- =================================================
+         STATS
+    ================================================= -->
+
+    <section class="stats">
+
+
+        <div
+            class="stat"
+            id="statTotalUsers"
+        >
+
+            <div class="stat-label">
+                TOTAL USERS
+            </div>
+
+            <div
+                class="stat-value"
+                id="totalUsers"
+            >
+                {{ total_users }}
+            </div>
+
+            <div class="stat-meta">
+                REGISTERED
+            </div>
+
+        </div>
+
+
+        <div
+            class="stat blue"
+            id="statOnlineUsers"
+        >
+
+            <div class="stat-label">
+                ONLINE USERS
+            </div>
+
+            <div
+                class="stat-value"
+                id="onlineUsers"
+            >
+                {{ online_users }}
+            </div>
+
+            <div class="stat-meta">
+                ACTIVE NOW
+            </div>
+
+        </div>
+
+
+        <div
+            class="stat yellow"
+            id="statTotalMessages"
+        >
+
+            <div class="stat-label">
+                TOTAL MESSAGES
+            </div>
+
+            <div
+                class="stat-value"
+                id="totalMessages"
+            >
+                {{ total_messages }}
+            </div>
+
+            <div class="stat-meta">
+                STORED
+            </div>
+
+        </div>
+
+
+        <div
+            class="stat red"
+            id="statUnread"
+        >
+
+            <div class="stat-label">
+                UNREAD
+            </div>
+
+            <div
+                class="stat-value"
+                id="unreadMessages"
+            >
+                {{ unread_messages }}
+            </div>
+
+            <div class="stat-meta">
+                PENDING READ
+            </div>
+
+        </div>
+
+
+        <div
+            class="stat blue"
+            id="statSessions"
+        >
+
+            <div class="stat-label">
+                ACTIVE SESSIONS
+            </div>
+
+            <div
+                class="stat-value"
+                id="activeSessions"
+            >
+                {{ active_sessions }}
+            </div>
+
+            <div class="stat-meta">
+                LIVE
+            </div>
+
+        </div>
+
+
+    </section>
+
+
+    <!-- =================================================
+         TOP GRID
+    ================================================= -->
+
+    <section class="grid">
+
+
+        <!-- =============================================
+             AUDIT
+        ============================================== -->
+
+        <div
+            class="panel"
+            id="audit"
+        >
+
+            <div class="panel-header">
+
+                <div class="panel-title">
+                    LIVE ACTIVITY // AUDIT LOG
+                </div>
+
+                <div
+                    class="panel-tag"
+                    id="auditTag"
+                >
+                    LIVE
+                </div>
+
+            </div>
+
+
+            <div class="panel-body">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                TIME
+                            </th>
+
+                            <th>
+                                EVENT
+                            </th>
+
+                            <th>
+                                USER
+                            </th>
+
+                            <th>
+                                IP
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="auditBody">
+
+
+                    {% if recent_logs %}
+
+
+                    {% for log in recent_logs %}
+
+                        <tr>
+
+                            <td>
+
+                                {{
+                                    log.timestamp.strftime('%H:%M:%S')
+                                    if log.timestamp
+                                    else '-'
+                                }}
+
+                            </td>
+
+
+                            <td
+                                class="
+                                {% if 'FAILED' in log.event_type %}
+                                    failed
+                                {% elif 'LOGIN' in log.event_type %}
+                                    login
+                                {% elif 'LOGOUT' in log.event_type %}
+                                    logout-event
+                                {% else %}
+                                    event
+                                {% endif %}
+                                "
+                            >
+
+                                {{ log.event_type }}
+
+                            </td>
+
+
+                            <td>
+                                {{ log.phone or '-' }}
+                            </td>
+
+
+                            <td>
+                                {{ log.ip_address or '-' }}
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+
+                    {% else %}
+
+                        <tr id="auditEmpty">
+
+                            <td colspan="4">
+
+                                <div class="empty">
+                                    NO AUDIT EVENTS
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                    {% endif %}
+
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+        <!-- =============================================
+             MESSAGES
+        ============================================== -->
+
+        <div
+            class="panel"
+            id="messages"
+        >
+
+            <div class="panel-header">
+
+                <div class="panel-title">
+                    RECENT MESSAGES
+                </div>
+
+                <div
+                    class="panel-tag"
+                    id="messagesTag"
+                >
+                    LIVE
+                </div>
+
+            </div>
+
+
+            <div class="panel-body">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                FROM
+                            </th>
+
+                            <th>
+                                TO
+                            </th>
+
+                            <th>
+                                MESSAGE
+                            </th>
+
+                            <th>
+                                STATUS
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="messagesBody">
+
+
+                    {% if recent_messages %}
+
+
+                    {% for message in recent_messages %}
+
+                        <tr>
+
+                            <td>
+                                {{ message.sender }}
+                            </td>
+
+                            <td>
+                                {{ message.receiver }}
+                            </td>
+
+                            <td
+                                title="{{ message.message }}"
+                            >
+
+                                {% if message.message|length > 25 %}
+
+                                    {{ message.message[:25] }}...
+
+                                {% else %}
+
+                                    {{ message.message }}
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <td>
+
+
+                                {% if message.status == 'read' %}
+
+                                    <span class="online">
+                                        READ
+                                    </span>
+
+
+                                {% elif message.status == 'delivered' %}
+
+                                    <span class="event">
+                                        DELIVERED
+                                    </span>
+
+
+                                {% else %}
+
+                                    <span class="logout-event">
+
+                                        {{
+                                            message.status|upper
+                                        }}
+
+                                    </span>
+
+                                {% endif %}
+
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+
+                    {% else %}
+
+                        <tr id="messageEmpty">
+
+                            <td colspan="4">
+
+                                <div class="empty">
+                                    NO MESSAGES
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                    {% endif %}
+
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+    </section>
+
+
+    <!-- =================================================
+         BOTTOM GRID
+    ================================================= -->
+
+    <section class="bottom-grid">
+
+
+        <!-- =============================================
+             USERS
+        ============================================== -->
+
+        <div
+            class="panel"
+            id="users"
+        >
+
+            <div class="panel-header">
+
+                <div class="panel-title">
+                    RECENT USERS
+                </div>
+
+                <div
+                    class="panel-tag"
+                    id="usersTag"
+                >
+                    {{ total_users }} TOTAL
+                </div>
+
+            </div>
+
+
+            <div class="panel-body">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                PHONE
+                            </th>
+
+                            <th>
+                                STATUS
+                            </th>
+
+                            <th>
+                                LAST LOGIN
+                            </th>
+
+                            <th>
+                                IP
+                            </th>
+
+                            <th>
+                                ACTIONS
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="usersBody">
+
+
+                    {% if recent_users %}
+
+
+                    {% for user in recent_users %}
+
+                        <tr
+                            data-user="{{ user.phone }}"
+                        >
+
+                            <td>
+                                {{ user.phone }}
+                            </td>
+
+
+                            <td>
+
+                                {% if user.online %}
+
+                                    <span class="online">
+                                        ● ONLINE
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="offline">
+                                        ○ OFFLINE
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <td>
+
+                                {% if user.last_login %}
+
+                                    {{
+                                        user.last_login.strftime(
+                                            '%Y-%m-%d %H:%M'
+                                        )
+                                    }}
+
+                                {% else %}
+
+                                    -
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <td>
+                                {{ user.last_ip or '-' }}
+                            </td>
+
+
+                            <td>
+
+                                <button
+                                    class="user-action reset"
+                                    onclick="openResetPassword('{{ user.phone }}')"
+                                >
+                                    [ RESET ]
+                                </button>
+
+
+                                <button
+                                    class="user-action delete"
+                                    onclick="deleteUser('{{ user.phone }}')"
+                                >
+                                    [ DELETE ]
+                                </button>
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+
+                    {% else %}
+
+                        <tr id="userEmpty">
+
+                            <td colspan="5">
+
+                                <div class="empty">
+                                    NO USERS
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                    {% endif %}
+
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+        <!-- =============================================
+             SESSIONS
+        ============================================== -->
+
+        <div
+            class="panel"
+            id="sessions"
+        >
+
+            <div class="panel-header">
+
+                <div class="panel-title">
+                    SESSION MONITOR
+                </div>
+
+                <div
+                    class="panel-tag"
+                    id="sessionTag"
+                >
+                    {{ active_sessions }} ACTIVE
+                </div>
+
+            </div>
+
+
+            <div class="panel-body">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                MODULE
+                            </th>
+
+                            <th>
+                                STATE
+                            </th>
+
+                            <th>
+                                VALUE
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+
+                        <tr>
+
+                            <td>
+                                AUTH SERVICE
+                            </td>
+
+                            <td>
+
+                                <span class="online">
+                                    ● ONLINE
+                                </span>
+
+                            </td>
+
+                            <td>
+                                READY
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                MESSAGE ENGINE
+                            </td>
+
+                            <td>
+
+                                <span class="online">
+                                    ● ONLINE
+                                </span>
+
+                            </td>
+
+                            <td
+                                id="messageEngineValue"
+                            >
+                                {{ total_messages }} MESSAGES
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                SESSION ENGINE
+                            </td>
+
+                            <td>
+
+                                <span class="online">
+                                    ● ONLINE
+                                </span>
+
+                            </td>
+
+                            <td
+                                id="sessionEngineValue"
+                            >
+                                {{ active_sessions }} ACTIVE
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                AUDIT ENGINE
+                            </td>
+
+                            <td>
+
+                                <span class="online">
+                                    ● ONLINE
+                                </span>
+
+                            </td>
+
+                            <td
+                                id="auditEngineValue"
+                            >
+                                {{ total_audit_logs }} EVENTS
+                            </td>
+
+                        </tr>
+
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+    </section>
+
+
+</main>
+
+</div>
+
+
+<!-- =====================================================
+     LIVE FEED
+===================================================== -->
+
+<div
+    class="live-feed"
+    id="liveFeed"
+></div>
+
+
+<!-- =====================================================
+     RESET PASSWORD MODAL
+===================================================== -->
+
+<div
+    class="modal"
+    id="resetModal"
+>
+
+    <div class="modal-box">
+
+
+        <div class="modal-title">
+            PASSWORD RESET // ROOT
+        </div>
+
+
+        <div
+            class="modal-user"
+            id="resetUser"
+        >
+            USER: -
+        </div>
+
+
+        <input
+            type="password"
+            class="modal-input"
+            id="newPassword"
+            placeholder="ENTER NEW PASSWORD"
+            autocomplete="new-password"
+        >
+
+
+        <input
+            type="password"
+            class="modal-input"
+            id="confirmPassword"
+            placeholder="CONFIRM NEW PASSWORD"
+            autocomplete="new-password"
+        >
+
+
+        <div class="modal-buttons">
+
+
+            <button
+                class="modal-button confirm"
+                onclick="submitResetPassword()"
+            >
+                [ RESET ]
+            </button>
+
+
+            <button
+                class="modal-button generate"
+                onclick="generateResetPassword()"
+            >
+                [ GENERATE ]
+            </button>
+
+
+            <button
+                class="modal-button cancel"
+                onclick="closeResetPassword()"
+            >
+                [ CANCEL ]
+            </button>
+
+
+        </div>
+
+
+        <div
+            class="password-result"
+            id="passwordResult"
+        >
+
+            <div class="password-result-title">
+                NEW PASSWORD // COPY NOW
+            </div>
+
+
+            <div
+                class="password-result-value"
+                id="passwordResultValue"
+            >
+            </div>
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+<script>
+
+
+/* =====================================================
+   SOCKET.IO
+===================================================== */
+
+const socket = io({
+
+    transports: [
+        "polling"
+    ],
+
+    withCredentials: true
+
+});
+
+
+const liveStatus =
+    document.getElementById(
+        "liveStatus"
+    );
+
+
+/* =====================================================
+   SOCKET CONNECTION
+===================================================== */
+
+socket.on(
+    "connect",
+    function () {
+
+        console.log(
+            "[ADMIN SOCKET] CONNECTED"
+        );
+
+
+        liveStatus.classList.remove(
+            "offline"
+        );
+
+
+        liveStatus.innerHTML =
+            '<span class="live-dot"></span> LIVE';
+
+
+        socket.emit(
+            "admin_connect"
+        );
+
+    }
+);
+
+
+socket.on(
+    "disconnect",
+    function () {
+
+        console.log(
+            "[ADMIN SOCKET] DISCONNECTED"
+        );
+
+
+        liveStatus.classList.add(
+            "offline"
+        );
+
+
+        liveStatus.innerHTML =
+            '<span class="live-dot"></span> OFFLINE';
+
+    }
+);
+
+
+socket.on(
+    "connect_error",
+    function (error) {
+
+        console.error(
+            "[ADMIN SOCKET] CONNECTION ERROR:",
+            error
+        );
+
+    }
+);
+
+
+/* =====================================================
+   HELPERS
+===================================================== */
+
+function escapeHtml(value) {
+
+    if (
+        value === null ||
+        value === undefined
+    ) {
+
+        return "";
+
+    }
+
+
+    return String(value)
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+function eventClass(eventType) {
+
+    if (!eventType) {
+
+        return "event";
+
+    }
+
+
+    if (
+        eventType.includes(
+            "FAILED"
+        )
+    ) {
+
+        return "failed";
+
+    }
+
+
+    if (
+        eventType.includes(
+            "LOGIN"
+        )
+    ) {
+
+        return "login";
+
+    }
+
+
+    if (
+        eventType.includes(
+            "LOGOUT"
+        )
+    ) {
+
+        return "logout-event";
+
+    }
+
+
+    if (
+        eventType.includes(
+            "DELETE"
+        )
+    ) {
+
+        return "failed";
+
+    }
+
+
+    return "event";
+
+}
+
+
+/* =====================================================
+   UPDATE STATS
+===================================================== */
+
+function updateStats(stats) {
+
+    if (!stats) {
+
+        return;
+
+    }
+
+
+    if (
+        stats.total_users !== undefined
+    ) {
+
+        document.getElementById(
+            "totalUsers"
+        ).textContent =
+            stats.total_users;
+
+
+        document.getElementById(
+            "usersTag"
+        ).textContent =
+            stats.total_users +
+            " TOTAL";
+
+    }
+
+
+    if (
+        stats.online_users !== undefined
+    ) {
+
+        document.getElementById(
+            "onlineUsers"
+        ).textContent =
+            stats.online_users;
+
+    }
+
+
+    if (
+        stats.total_messages !== undefined
+    ) {
+
+        document.getElementById(
+            "totalMessages"
+        ).textContent =
+            stats.total_messages;
+
+
+        document.getElementById(
+            "messageEngineValue"
+        ).textContent =
+            stats.total_messages +
+            " MESSAGES";
+
+    }
+
+
+    if (
+        stats.unread_messages !== undefined
+    ) {
+
+        document.getElementById(
+            "unreadMessages"
+        ).textContent =
+            stats.unread_messages;
+
+    }
+
+
+    if (
+        stats.active_sessions !== undefined
+    ) {
+
+        document.getElementById(
+            "activeSessions"
+        ).textContent =
+            stats.active_sessions;
+
+
+        document.getElementById(
+            "sessionTag"
+        ).textContent =
+            stats.active_sessions +
+            " ACTIVE";
+
+
+        document.getElementById(
+            "sessionEngineValue"
+        ).textContent =
+            stats.active_sessions +
+            " ACTIVE";
+
+    }
+
+
+    if (
+        stats.total_audit_logs !== undefined
+    ) {
+
+        document.getElementById(
+            "auditEngineValue"
+        ).textContent =
+            stats.total_audit_logs +
+            " EVENTS";
+
+    }
+
+}
+
+
+/* =====================================================
+   FLASH STAT
+===================================================== */
+
+function flashStat(id) {
+
+    const element =
+        document.getElementById(id);
+
+
+    if (!element) {
+
+        return;
+
+    }
+
+
+    element.classList.remove(
+        "flash"
+    );
+
+
+    void element.offsetWidth;
+
+
+    element.classList.add(
+        "flash"
+    );
+
+
+    setTimeout(
+        function () {
+
+            element.classList.remove(
+                "flash"
+            );
+
+        },
+        700
+    );
+
+}
+
+
+/* =====================================================
+   LIVE AUDIT
+===================================================== */
+
+function addAuditLog(log) {
+
+    if (!log) {
+
+        return;
+
+    }
+
+
+    const body =
+        document.getElementById(
+            "auditBody"
+        );
+
+
+    const empty =
+        document.getElementById(
+            "auditEmpty"
+        );
+
+
+    if (empty) {
+
+        empty.remove();
+
+    }
+
+
+    const row =
+        document.createElement(
+            "tr"
+        );
+
+
+    row.className =
+        "live-row";
+
+
+    const timestamp =
+        log.timestamp || "-";
+
+
+    row.innerHTML = `
+
+        <td>
+            ${escapeHtml(timestamp)}
+        </td>
+
+        <td
+            class="${eventClass(
+                log.event_type
+            )}"
+        >
+            ${escapeHtml(
+                log.event_type ||
+                "EVENT"
+            )}
+        </td>
+
+        <td>
+            ${escapeHtml(
+                log.phone ||
+                "-"
+            )}
+        </td>
+
+        <td>
+            ${escapeHtml(
+                log.ip_address ||
+                "-"
+            )}
+        </td>
+
+    `;
+
+
+    body.prepend(row);
+
+
+    while (
+        body.children.length > 12
+    ) {
+
+        body.lastElementChild.remove();
+
+    }
+
+}
+
+
+/* =====================================================
+   LIVE MESSAGE
+===================================================== */
+
+function addMessage(message) {
+
+    if (!message) {
+
+        return;
+
+    }
+
+
+    const body =
+        document.getElementById(
+            "messagesBody"
+        );
+
+
+    const empty =
+        document.getElementById(
+            "messageEmpty"
+        );
+
+
+    if (empty) {
+
+        empty.remove();
+
+    }
+
+
+    const row =
+        document.createElement(
+            "tr"
+        );
+
+
+    row.className =
+        "live-row";
+
+
+    let statusHtml = "";
+
+
+    if (
+        message.status === "read"
+    ) {
+
+        statusHtml =
+            '<span class="online">READ</span>';
+
+    }
+
+    else if (
+        message.status === "delivered"
+    ) {
+
+        statusHtml =
+            '<span class="event">DELIVERED</span>';
+
+    }
+
+    else {
+
+        statusHtml =
+            '<span class="logout-event">' +
+            escapeHtml(
+                String(
+                    message.status ||
+                    "PENDING"
+                ).toUpperCase()
+            ) +
+            '</span>';
+
+    }
+
+
+    let text =
+        message.message ||
+        "";
+
+
+    if (
+        text.length > 25
+    ) {
+
+        text =
+            text.substring(
+                0,
+                25
+            ) +
+            "...";
+
+    }
+
+
+    row.innerHTML = `
+
+        <td>
+            ${escapeHtml(
+                message.sender
+            )}
+        </td>
+
+        <td>
+            ${escapeHtml(
+                message.receiver
+            )}
+        </td>
+
+        <td
+            title="${escapeHtml(
+                message.message ||
+                ""
+            )}"
+        >
+            ${escapeHtml(text)}
+        </td>
+
+        <td>
+            ${statusHtml}
+        </td>
+
+    `;
+
+
+    body.prepend(row);
+
+
+    while (
+        body.children.length > 8
+    ) {
+
+        body.lastElementChild.remove();
+
+    }
+
+}
+
+
+/* =====================================================
+   LIVE USER
+===================================================== */
+
+function updateUser(user) {
+
+    if (
+        !user ||
+        !user.phone
+    ) {
+
+        return;
+
+    }
+
+
+    const body =
+        document.getElementById(
+            "usersBody"
+        );
+
+
+    const empty =
+        document.getElementById(
+            "userEmpty"
+        );
+
+
+    if (empty) {
+
+        empty.remove();
+
+    }
+
+
+    let row =
+        body.querySelector(
+            `tr[data-user="${CSS.escape(
+                user.phone
+            )}"]`
+        );
+
+
+    if (!row) {
+
+        row =
+            document.createElement(
+                "tr"
+            );
+
+
+        row.dataset.user =
+            user.phone;
+
+
+        row.className =
+            "live-row";
+
+
+        body.prepend(row);
+
+    }
+
+
+    const status =
+        user.online
+
+            ? '<span class="online">● ONLINE</span>'
+
+            : '<span class="offline">○ OFFLINE</span>';
+
+
+    let lastLogin = "-";
+
+
+    if (
+        user.last_login
+    ) {
+
+        lastLogin =
+            String(
+                user.last_login
+            )
+            .replace(
+                "T",
+                " "
+            )
+            .substring(
+                0,
+                16
+            );
+
+    }
+
+
+    const safePhone =
+        escapeHtml(
+            user.phone
+        );
+
+
+    row.innerHTML = `
+
+        <td>
+            ${safePhone}
+        </td>
+
+        <td>
+            ${status}
+        </td>
+
+        <td>
+            ${escapeHtml(
+                lastLogin
+            )}
+        </td>
+
+        <td>
+            ${escapeHtml(
+                user.last_ip ||
+                "-"
+            )}
+        </td>
+
+        <td>
+
+            <button
+                class="user-action reset"
+                onclick="openResetPassword('${safePhone}')"
+            >
+                [ RESET ]
+            </button>
+
+            <button
+                class="user-action delete"
+                onclick="deleteUser('${safePhone}')"
+            >
+                [ DELETE ]
+            </button>
+
+        </td>
+
+    `;
+
+
+    while (
+        body.children.length > 8
+    ) {
+
+        body.lastElementChild.remove();
+
+    }
+
+}
+
+
+/* =====================================================
+   LIVE FEED
+===================================================== */
+
+function showLiveFeed(
+    eventType,
+    text
+) {
+
+    const feed =
+        document.getElementById(
+            "liveFeed"
+        );
+
+
+    const item =
+        document.createElement(
+            "div"
+        );
+
+
+    item.className =
+        "feed-item";
+
+
+    item.innerHTML = `
+
+        <div class="feed-event">
+
+            [ LIVE ]
+
+            ${escapeHtml(
+                eventType ||
+                "EVENT"
+            )}
+
+        </div>
+
+
+        <div class="feed-text">
+
+            ${escapeHtml(
+                text ||
+                "New system activity detected"
+            )}
+
+        </div>
+
+
+        <div class="feed-time">
+
+            ${new Date().toLocaleTimeString()}
+
+        </div>
+
+    `;
+
+
+    feed.prepend(item);
+
+
+    while (
+        feed.children.length > 4
+    ) {
+
+        feed.lastElementChild.remove();
+
+    }
+
+
+    setTimeout(
+        function () {
+
+            if (
+                item &&
+                item.parentNode
+            ) {
+
+                item.remove();
+
+            }
+
+        },
+        5000
+    );
+
+}
+
+
+/* =====================================================
+   MAIN ADMIN EVENT
+===================================================== */
+
+socket.on(
+    "admin_activity",
+    function (data) {
+
+        console.log(
+            "[ADMIN LIVE EVENT]",
+            data
+        );
+
+
+        if (!data) {
+
+            return;
+
+        }
+
+
+        if (data.log) {
+
+            addAuditLog(
+                data.log
+            );
+
+            flashStat(
+                "statSessions"
+            );
+
+        }
+
+
+        if (data.message) {
+
+            addMessage(
+                data.message
+            );
+
+            flashStat(
+                "statTotalMessages"
+            );
+
+        }
+
+
+        if (data.user) {
+
+            updateUser(
+                data.user
+            );
+
+            flashStat(
+                "statTotalUsers"
+            );
+
+        }
+
+
+        if (data.stats) {
+
+            updateStats(
+                data.stats
+            );
+
+        }
+
+
+        let feedText =
+            data.description ||
+            data.message_text ||
+            "New activity detected";
+
+
+        if (data.message) {
+
+            feedText =
+                data.message.sender +
+                " → " +
+                data.message.receiver +
+                " : " +
+                data.message.message;
+
+        }
+
+
+        showLiveFeed(
+
+            data.event_type ||
+            "SYSTEM_EVENT",
+
+            feedText
+
+        );
+
+    }
+);
+
+
+/* =====================================================
+   PRESENCE EVENT
+===================================================== */
+
+socket.on(
+    "admin_presence",
+    function (data) {
+
+        console.log(
+            "[ADMIN PRESENCE]",
+            data
+        );
+
+
+        if (!data) {
+
+            return;
+
+        }
+
+
+        if (data.user) {
+
+            updateUser(
+                data.user
+            );
+
+        }
+
+
+        if (data.stats) {
+
+            updateStats(
+                data.stats
+            );
+
+        }
+
+
+        if (data.user) {
+
+            showLiveFeed(
+
+                data.user.online
+                    ? "USER_ONLINE"
+                    : "USER_OFFLINE",
+
+                data.user.phone +
+
+                (
+                    data.user.online
+
+                        ? " connected to LAN-CHAT"
+
+                        : " disconnected from LAN-CHAT"
+                )
+
+            );
+
+        }
+
+
+        flashStat(
+            "statOnlineUsers"
+        );
+
+    }
+);
+
+
+/* =====================================================
+   PASSWORD RESET
+===================================================== */
+
+let resetTargetPhone = null;
+
+
+/* =====================================================
+   OPEN RESET MODAL
+===================================================== */
+
+function openResetPassword(phone) {
+
+    resetTargetPhone =
+        phone;
+
+
+    document.getElementById(
+        "resetUser"
+    ).textContent =
+        "USER: " +
+        phone;
+
+
+    document.getElementById(
+        "newPassword"
+    ).value = "";
+
+
+    document.getElementById(
+        "confirmPassword"
+    ).value = "";
+
+
+    document.getElementById(
+        "passwordResult"
+    ).style.display =
+        "none";
+
+
+    document.getElementById(
+        "passwordResultValue"
+    ).textContent =
+        "";
+
+
+    document.getElementById(
+        "resetModal"
+    ).classList.add(
+        "active"
+    );
+
+}
+
+
+/* =====================================================
+   CLOSE RESET MODAL
+===================================================== */
+
+function closeResetPassword() {
+
+    resetTargetPhone =
+        null;
+
+
+    document.getElementById(
+        "resetModal"
+    ).classList.remove(
+        "active"
+    );
+
+}
+
+
+/* =====================================================
+   MANUAL PASSWORD RESET
+===================================================== */
+
+async function submitResetPassword() {
+
+    if (!resetTargetPhone) {
+
+        return;
+
+    }
+
+
+    const password =
+        document.getElementById(
+            "newPassword"
+        ).value;
+
+
+    const confirm =
+        document.getElementById(
+            "confirmPassword"
+        ).value;
+
+
+    if (!password) {
+
+        alert(
+            "ENTER THE NEW PASSWORD"
+        );
+
+        return;
+
+    }
+
+
+    if (
+        password.length < 6
+    ) {
+
+        alert(
+            "PASSWORD MUST BE AT LEAST 6 CHARACTERS"
+        );
+
+        return;
+
+    }
+
+
+    if (
+        password !== confirm
+    ) {
+
+        alert(
+            "PASSWORDS DO NOT MATCH"
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+
+                "/admin/api/users/" +
+
+                encodeURIComponent(
+                    resetTargetPhone
+                ) +
+
+                "/reset-password",
+
+                {
+
+                    method:
+                        "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json"
+
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            password:
+                                password
+
+                        })
+
+                }
+
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (
+            !data.success
+        ) {
+
+            alert(
+                data.message ||
+                "PASSWORD RESET FAILED"
+            );
+
+            return;
+
+        }
+
+
+        showNewPassword(
+            data.temporary_password
+        );
+
+
+        showLiveFeed(
+
+            "PASSWORD_RESET",
+
+            "Password reset for " +
+            resetTargetPhone
+
+        );
+
+
+    }
+
+    catch (error) {
+
+        console.error(
+            error
+        );
+
+
+        alert(
+            "UNABLE TO RESET PASSWORD"
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   GENERATE PASSWORD
+===================================================== */
+
+async function generateResetPassword() {
+
+    if (!resetTargetPhone) {
+
+        return;
+
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+
+                "/admin/api/users/" +
+
+                encodeURIComponent(
+                    resetTargetPhone
+                ) +
+
+                "/reset-password",
+
+                {
+
+                    method:
+                        "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json"
+
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            generate:
+                                true
+
+                        })
+
+                }
+
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (
+            !data.success
+        ) {
+
+            alert(
+                data.message ||
+                "PASSWORD RESET FAILED"
+            );
+
+            return;
+
+        }
+
+
+        showNewPassword(
+            data.temporary_password
+        );
+
+
+        showLiveFeed(
+
+            "PASSWORD_RESET",
+
+            "Generated new password for " +
+            resetTargetPhone
+
+        );
+
+
+    }
+
+    catch (error) {
+
+        console.error(
+            error
+        );
+
+
+        alert(
+            "UNABLE TO RESET PASSWORD"
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   SHOW NEW PASSWORD
+===================================================== */
+
+function showNewPassword(password) {
+
+    document.getElementById(
+        "passwordResultValue"
+    ).textContent =
+        password;
+
+
+    document.getElementById(
+        "passwordResult"
+    ).style.display =
+        "block";
+
+}
+
+
+/* =====================================================
+   DELETE USER
+===================================================== */
+
+async function deleteUser(phone) {
+
+    const confirmed =
+        confirm(
+
+            "DELETE USER " +
+            phone +
+
+            "?\n\n" +
+
+            "THIS WILL PERMANENTLY DELETE:\n" +
+
+            "- USER ACCOUNT\n" +
+
+            "- USER MESSAGES\n" +
+
+            "- USER SESSIONS\n\n" +
+
+            "THIS ACTION CANNOT BE UNDONE."
+
+        );
+
+
+    if (!confirmed) {
+
+        return;
+
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+
+                "/admin/api/users/" +
+
+                encodeURIComponent(
+                    phone
+                ),
+
+                {
+
+                    method:
+                        "DELETE"
+
+                }
+
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (
+            !data.success
+        ) {
+
+            alert(
+                data.message ||
+                "DELETE FAILED"
+            );
+
+            return;
+
+        }
+
+
+        const row =
+            document.querySelector(
+
+                `tr[data-user="${CSS.escape(
+                    phone
+                )}"]`
+
+            );
+
+
+        if (row) {
+
+            row.remove();
+
+        }
+
+
+        showLiveFeed(
+
+            "USER_DELETED",
+
+            phone +
+            " account deleted"
+
+        );
+
+
+    }
+
+    catch (error) {
+
+        console.error(
+            error
+        );
+
+
+        alert(
+            "UNABLE TO DELETE USER"
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   CLOSE MODAL WHEN CLICKING BACKDROP
+===================================================== */
+
+document.getElementById(
+    "resetModal"
+).addEventListener(
+    "click",
+    function (event) {
+
+        if (
+            event.target === this
+        ) {
+
+            closeResetPassword();
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   SIDEBAR NAVIGATION
+===================================================== */
+
+document
+    .querySelectorAll(".nav")
+    .forEach(
+        function (nav) {
+
+            nav.addEventListener(
+                "click",
+                function () {
+
+                    document
+                        .querySelectorAll(".nav")
+                        .forEach(
+                            function (item) {
+
+                                item.classList.remove(
+                                    "active"
+                                );
+
+                            }
+                        );
+
+
+                    nav.classList.add(
+                        "active"
+                    );
+
+                }
+            );
+
+        }
+    );
+
+
+/* =====================================================
+   KEYBOARD ESCAPE
+===================================================== */
+
+document.addEventListener(
+    "keydown",
+    function (event) {
+
+        if (
+            event.key === "Escape"
+        ) {
+
+            closeResetPassword();
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   INITIALIZED
+===================================================== */
+
+console.log(
+    "[ADMIN DASHBOARD] LIVE MONITOR INITIALIZED"
+);
+
+console.log(
+    "[ADMIN DASHBOARD] USER MANAGEMENT ENABLED"
+);
+
+console.log(
+    "[ADMIN DASHBOARD] PASSWORD RESET ENABLED"
+);
+
+console.log(
+    "[ADMIN DASHBOARD] USER DELETE ENABLED"
+);
+
+
+</script>
+
+
+</body>
+
+</html>

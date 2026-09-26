@@ -1,0 +1,6146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>LAN // SECURE CHANNEL</title>
+
+
+    <style>
+
+        /* =========================================================
+           GLOBAL
+        ========================================================= */
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        :root {
+
+            --bg:
+                #05080a;
+
+            --bg2:
+                #080d10;
+
+            --panel:
+                #0b1216;
+
+            --panel2:
+                #0e171b;
+
+            --panel3:
+                #111d21;
+
+            --border:
+                #26363c;
+
+            --border-light:
+                #344b52;
+
+            --green:
+                #50ff9a;
+
+            --green-bright:
+                #75ffb2;
+
+            --green-dark:
+                #123d2a;
+
+            --cyan:
+                #42dfff;
+
+            --cyan-dark:
+                #103842;
+
+            --yellow:
+                #ffd166;
+
+            --yellow-dark:
+                #403718;
+
+            --red:
+                #ff5364;
+
+            --red-dark:
+                #3d151c;
+
+            --white:
+                #e8f2ee;
+
+            --text:
+                #c6d5cf;
+
+            --muted:
+                #7b8d87;
+
+            --muted2:
+                #53635e;
+
+            --font:
+                "Consolas",
+                "Courier New",
+                monospace;
+        }
+
+
+        html,
+        body {
+
+            width: 100%;
+            height: 100%;
+
+            margin: 0;
+
+        }
+
+
+        body {
+
+            overflow: hidden;
+
+            background:
+
+                radial-gradient(
+                    circle at 50% 0%,
+                    rgba(66, 223, 255, 0.08),
+                    transparent 32%
+                ),
+
+                radial-gradient(
+                    circle at 100% 100%,
+                    rgba(80, 255, 154, 0.05),
+                    transparent 35%
+                ),
+
+                #05080a;
+
+            color:
+                var(--text);
+
+            font-family:
+                var(--font);
+        }
+
+
+        /* =========================================================
+           CRT
+        ========================================================= */
+
+        body::before {
+
+            content: "";
+
+            position: fixed;
+
+            inset: 0;
+
+            pointer-events: none;
+
+            z-index: 9999;
+
+            background:
+
+                repeating-linear-gradient(
+                    to bottom,
+                    rgba(255,255,255,0.018) 0px,
+                    rgba(255,255,255,0.018) 1px,
+                    transparent 1px,
+                    transparent 4px
+                );
+
+            opacity:
+                0.25;
+        }
+
+
+        body::after {
+
+            content: "";
+
+            position: fixed;
+
+            inset: 0;
+
+            pointer-events: none;
+
+            z-index: 9998;
+
+            background:
+
+                radial-gradient(
+                    ellipse at center,
+                    transparent 50%,
+                    rgba(0,0,0,0.45) 100%
+                );
+        }
+
+
+        /* =========================================================
+           SCROLLBAR
+        ========================================================= */
+
+        ::-webkit-scrollbar {
+
+            width: 7px;
+            height: 7px;
+        }
+
+
+        ::-webkit-scrollbar-track {
+
+            background:
+                #070b0d;
+        }
+
+
+        ::-webkit-scrollbar-thumb {
+
+            background:
+                #28403a;
+
+            border:
+                1px solid #396052;
+        }
+
+
+        ::-webkit-scrollbar-thumb:hover {
+
+            background:
+                #3f7961;
+        }
+
+
+        /* =========================================================
+           APP
+        ========================================================= */
+
+        .app {
+
+            width: 100%;
+            height: 100vh;
+
+            display: flex;
+
+            position: relative;
+
+            background:
+                #05080a;
+        }
+
+
+        /* =========================================================
+           SIDEBAR
+        ========================================================= */
+
+        .sidebar {
+
+            width: 360px;
+
+            min-width: 360px;
+
+            height: 100%;
+
+            display: flex;
+
+            flex-direction: column;
+
+            position: relative;
+
+            z-index: 10;
+
+            background:
+
+                linear-gradient(
+                    180deg,
+                    #0a1114 0%,
+                    #080d10 100%
+                );
+
+            border-right:
+                2px solid #203238;
+
+            box-shadow:
+                8px 0 30px rgba(0,0,0,0.25);
+        }
+
+
+        .sidebar::after {
+
+            content: "";
+
+            position: absolute;
+
+            top: 0;
+            right: -2px;
+
+            width: 2px;
+            height: 100%;
+
+            background:
+
+                linear-gradient(
+                    transparent,
+                    var(--cyan),
+                    var(--green),
+                    transparent
+                );
+
+            opacity:
+                0.25;
+        }
+
+
+        /* =========================================================
+           SIDEBAR HEADER
+        ========================================================= */
+
+        .sidebar-header {
+
+            min-height:
+                94px;
+
+            padding:
+                19px;
+
+            position:
+                relative;
+
+            border-bottom:
+                1px solid var(--border);
+
+            background:
+
+                linear-gradient(
+                    90deg,
+                    rgba(66,223,255,0.055),
+                    transparent 70%
+                );
+        }
+
+
+        .sidebar-header::before {
+
+            content:
+                "NODE://LOCAL";
+
+            position:
+                absolute;
+
+            right:
+                18px;
+
+            top:
+                11px;
+
+            color:
+                var(--cyan);
+
+            font-size:
+                8px;
+
+            letter-spacing:
+                1.5px;
+
+            opacity:
+                0.75;
+        }
+
+
+        .brand-row {
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                space-between;
+        }
+
+
+        .brand {
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            gap:
+                12px;
+        }
+
+
+        .brand-icon {
+
+            width:
+                34px;
+
+            height:
+                34px;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            color:
+                var(--green);
+
+            background:
+                #07150e;
+
+            border:
+                1px solid var(--green);
+
+            box-shadow:
+                0 0 14px rgba(80,255,154,0.13);
+
+            font-size:
+                13px;
+
+            font-weight:
+                bold;
+        }
+
+
+        .brand-name {
+
+            color:
+                var(--white);
+
+            font-size:
+                17px;
+
+            font-weight:
+                bold;
+
+            letter-spacing:
+                1px;
+        }
+
+
+        .brand-name span {
+
+            color:
+                var(--cyan);
+        }
+
+
+        .user-info {
+
+            margin-top:
+                6px;
+
+            color:
+                var(--yellow);
+
+            font-size:
+                9px;
+
+            letter-spacing:
+                0.7px;
+        }
+
+
+        .user-info::before {
+
+            content:
+                "USER:// ";
+
+            color:
+                var(--muted);
+        }
+
+
+        .header-actions {
+
+            display:
+                flex;
+
+            gap:
+                7px;
+        }
+
+
+        .icon-button {
+
+            width:
+                34px;
+
+            height:
+                34px;
+
+            border:
+                1px solid var(--border-light);
+
+            background:
+                #0b1316;
+
+            color:
+                var(--cyan);
+
+            font-family:
+                var(--font);
+
+            font-size:
+                17px;
+
+            cursor:
+                pointer;
+
+            transition:
+                0.2s;
+        }
+
+
+        .icon-button:hover {
+
+            border-color:
+                var(--cyan);
+
+            color:
+                var(--white);
+
+            background:
+                var(--cyan-dark);
+
+            box-shadow:
+                0 0 14px rgba(66,223,255,0.12);
+        }
+
+
+        #changePasswordButton {
+
+            color:
+                var(--yellow);
+        }
+
+
+        #changePasswordButton:hover {
+
+            border-color:
+                var(--yellow);
+
+            color:
+                var(--white);
+
+            background:
+                var(--yellow-dark);
+
+            box-shadow:
+                0 0 14px rgba(255,209,102,0.10);
+        }
+
+
+        #logoutButton {
+
+            color:
+                var(--red);
+        }
+
+
+        #logoutButton:hover {
+
+            border-color:
+                var(--red);
+
+            background:
+                var(--red-dark);
+
+            color:
+                #fff;
+        }
+
+
+        #logoutButton:disabled {
+
+            opacity:
+                0.35;
+
+            cursor:
+                wait;
+        }
+
+
+        /* =========================================================
+           SEARCH
+        ========================================================= */
+
+        .search-container {
+
+            padding:
+                13px;
+
+            border-bottom:
+                1px solid var(--border);
+
+            background:
+                #091014;
+        }
+
+
+        .search-box {
+
+            position:
+                relative;
+        }
+
+
+        .search-box::before {
+
+            content:
+                ">";
+
+            position:
+                absolute;
+
+            left:
+                12px;
+
+            top:
+                9px;
+
+            color:
+                var(--green);
+
+            font-weight:
+                bold;
+        }
+
+
+        .search-input {
+
+            width:
+                100%;
+
+            height:
+                38px;
+
+            padding:
+                0 12px 0 29px;
+
+            border:
+                1px solid #2a3c42;
+
+            outline:
+                none;
+
+            background:
+                #05090b;
+
+            color:
+                var(--white);
+
+            font-family:
+                var(--font);
+
+            font-size:
+                10px;
+
+            transition:
+                0.2s;
+        }
+
+
+        .search-input::placeholder {
+
+            color:
+                #52635e;
+        }
+
+
+        .search-input:focus {
+
+            border-color:
+                var(--cyan);
+
+            box-shadow:
+                0 0 12px rgba(66,223,255,0.08);
+        }
+
+
+        /* =========================================================
+           CONVERSATIONS
+        ========================================================= */
+
+        .conversations {
+
+            flex:
+                1;
+
+            overflow-y:
+                auto;
+
+            padding:
+                9px;
+        }
+
+
+        .list-label {
+
+            padding:
+                7px 9px 10px;
+
+            color:
+                var(--cyan);
+
+            font-size:
+                8px;
+
+            letter-spacing:
+                2px;
+
+            opacity:
+                0.8;
+        }
+
+
+        .conversation {
+
+            min-height:
+                72px;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            gap:
+                12px;
+
+            margin-bottom:
+                6px;
+
+            padding:
+                10px;
+
+            position:
+                relative;
+
+            background:
+                #0b1215;
+
+            border:
+                1px solid #1e2d32;
+
+            cursor:
+                pointer;
+
+            transition:
+                0.18s;
+        }
+
+
+        .conversation:hover {
+
+            background:
+                #101a1e;
+
+            border-color:
+                #36525a;
+
+            transform:
+                translateX(2px);
+        }
+
+
+        .conversation.active {
+
+            background:
+
+                linear-gradient(
+                    90deg,
+                    rgba(80,255,154,0.13),
+                    rgba(66,223,255,0.045)
+                );
+
+            border-color:
+                var(--green);
+
+            box-shadow:
+
+                inset 3px 0 0 var(--green),
+
+                0 0 15px rgba(80,255,154,0.05);
+        }
+
+
+        .conversation.active::after {
+
+            content:
+                "ACTIVE";
+
+            position:
+                absolute;
+
+            right:
+                9px;
+
+            top:
+                5px;
+
+            color:
+                var(--green);
+
+            font-size:
+                6px;
+
+            letter-spacing:
+                1px;
+        }
+
+
+        .avatar {
+
+            width:
+                43px;
+
+            min-width:
+                43px;
+
+            height:
+                43px;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            background:
+                #07151a;
+
+            border:
+                1px solid var(--cyan);
+
+            color:
+                var(--cyan);
+
+            font-size:
+                11px;
+
+            position:
+                relative;
+
+            box-shadow:
+                0 0 10px rgba(66,223,255,0.06);
+        }
+
+
+        .avatar::before {
+
+            content:
+                "";
+
+            position:
+                absolute;
+
+            inset:
+                4px;
+
+            border:
+                1px solid rgba(66,223,255,0.18);
+        }
+
+
+        .avatar::after {
+
+            content:
+                "";
+
+            position:
+                absolute;
+
+            width:
+                7px;
+
+            height:
+                7px;
+
+            right:
+                -3px;
+
+            bottom:
+                -3px;
+
+            background:
+                var(--green);
+
+            border:
+                1px solid #07100d;
+
+            box-shadow:
+                0 0 7px rgba(80,255,154,0.5);
+        }
+
+
+        .conversation-info {
+
+            flex:
+                1;
+
+            min-width:
+                0;
+        }
+
+
+        .conversation-top {
+
+            display:
+                flex;
+
+            justify-content:
+                space-between;
+
+            gap:
+                8px;
+        }
+
+
+        .conversation-name {
+
+            color:
+                var(--white);
+
+            font-size:
+                11px;
+
+            font-weight:
+                bold;
+
+            white-space:
+                nowrap;
+
+            overflow:
+                hidden;
+
+            text-overflow:
+                ellipsis;
+        }
+
+
+        .conversation-time {
+
+            color:
+                var(--yellow);
+
+            font-size:
+                7px;
+
+            white-space:
+                nowrap;
+
+            opacity:
+                0.75;
+        }
+
+
+        .conversation-bottom {
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                space-between;
+
+            gap:
+                7px;
+
+            margin-top:
+                7px;
+        }
+
+
+        .conversation-preview {
+
+            color:
+                var(--muted);
+
+            font-size:
+                9px;
+
+            white-space:
+                nowrap;
+
+            overflow:
+                hidden;
+
+            text-overflow:
+                ellipsis;
+        }
+
+
+        .unread {
+
+            min-width:
+                20px;
+
+            height:
+                18px;
+
+            padding:
+                0 5px;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            background:
+                #0b2417;
+
+            border:
+                1px solid var(--green);
+
+            color:
+                var(--green);
+
+            font-size:
+                8px;
+
+            font-weight:
+                bold;
+
+            box-shadow:
+                0 0 8px rgba(80,255,154,0.1);
+        }
+
+
+        /* =========================================================
+           CHAT AREA
+        ========================================================= */
+
+        .chat-area {
+
+            flex:
+                1;
+
+            min-width:
+                0;
+
+            height:
+                100%;
+
+            display:
+                flex;
+
+            flex-direction:
+                column;
+
+            position:
+                relative;
+
+            background:
+
+                radial-gradient(
+                    circle at 50% 35%,
+                    rgba(66,223,255,0.035),
+                    transparent 40%
+                ),
+
+                #060a0c;
+        }
+
+
+        .chat-area::before {
+
+            content:
+                "";
+
+            position:
+                absolute;
+
+            inset:
+                0;
+
+            pointer-events:
+                none;
+
+            opacity:
+                0.27;
+
+            background-image:
+
+                linear-gradient(
+                    rgba(66,223,255,0.045) 1px,
+                    transparent 1px
+                ),
+
+                linear-gradient(
+                    90deg,
+                    rgba(66,223,255,0.045) 1px,
+                    transparent 1px
+                );
+
+            background-size:
+                45px 45px;
+        }
+
+
+        /* =========================================================
+           CHAT HEADER
+        ========================================================= */
+
+        .chat-header {
+
+            height:
+                76px;
+
+            min-height:
+                76px;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            padding:
+                0 22px;
+
+            position:
+                relative;
+
+            z-index:
+                5;
+
+            border-bottom:
+                2px solid #23353b;
+
+            background:
+                #0a1215;
+
+            box-shadow:
+                0 5px 20px rgba(0,0,0,0.18);
+        }
+
+
+        .chat-header::after {
+
+            content:
+                "";
+
+            position:
+                absolute;
+
+            bottom:
+                -2px;
+
+            left:
+                0;
+
+            width:
+                170px;
+
+            height:
+                2px;
+
+            background:
+                var(--cyan);
+
+            box-shadow:
+                0 0 10px rgba(66,223,255,0.3);
+        }
+
+
+        .chat-header::before {
+
+            content:
+                "SECURE LINK // LOCAL MESH";
+
+            position:
+                absolute;
+
+            right:
+                22px;
+
+            top:
+                10px;
+
+            color:
+                var(--cyan);
+
+            font-size:
+                7px;
+
+            letter-spacing:
+                1.5px;
+
+            opacity:
+                0.65;
+        }
+
+
+        .back-button {
+
+            display:
+                none;
+
+            width:
+                34px;
+
+            height:
+                34px;
+
+            margin-right:
+                10px;
+
+            border:
+                1px solid var(--border-light);
+
+            background:
+                #0b1518;
+
+            color:
+                var(--cyan);
+
+            cursor:
+                pointer;
+        }
+
+
+        .chat-header-avatar {
+
+            width:
+                42px;
+
+            height:
+                42px;
+
+            display:
+                none;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            margin-right:
+                12px;
+
+            background:
+                #07151a;
+
+            border:
+                1px solid var(--cyan);
+
+            color:
+                var(--cyan);
+
+            font-size:
+                10px;
+
+            box-shadow:
+                0 0 12px rgba(66,223,255,0.08);
+        }
+
+
+        .chat-title-area {
+
+            min-width:
+                0;
+        }
+
+
+        .chat-title {
+
+            color:
+                var(--white);
+
+            font-size:
+                14px;
+
+            font-weight:
+                bold;
+
+            letter-spacing:
+                1px;
+        }
+
+
+        .chat-subtitle {
+
+            margin-top:
+                7px;
+
+            color:
+                var(--green);
+
+            font-size:
+                8px;
+
+            letter-spacing:
+                1px;
+        }
+
+
+        .chat-subtitle::before {
+
+            content:
+                "● ";
+
+            color:
+                var(--green);
+
+            animation:
+                pulse 1.5s infinite;
+        }
+
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity:
+                    0.35;
+            }
+
+            50% {
+                opacity:
+                    1;
+            }
+        }
+
+
+        /* =========================================================
+           MESSAGES
+        ========================================================= */
+
+        .messages {
+
+            flex:
+                1;
+
+            overflow-y:
+                auto;
+
+            padding:
+                28px 8%;
+
+            position:
+                relative;
+
+            z-index:
+                2;
+        }
+
+
+        .date-divider {
+
+            text-align:
+                center;
+
+            margin:
+                20px 0;
+
+            color:
+                var(--yellow);
+
+            font-size:
+                7px;
+
+            letter-spacing:
+                2px;
+
+            opacity:
+                0.75;
+        }
+
+
+        .date-divider::before,
+        .date-divider::after {
+
+            content:
+                "";
+
+            display:
+                inline-block;
+
+            width:
+                75px;
+
+            height:
+                1px;
+
+            vertical-align:
+                middle;
+
+            background:
+                #344039;
+
+            margin:
+                0 12px;
+        }
+
+
+        .message {
+
+            display:
+                flex;
+
+            margin-bottom:
+                15px;
+        }
+
+
+        .message.sent {
+
+            justify-content:
+                flex-end;
+        }
+
+
+        .message-bubble {
+
+            max-width:
+                min(680px, 78%);
+
+            padding:
+                11px 14px;
+
+            position:
+                relative;
+
+            border:
+                1px solid #293a40;
+
+            background:
+                #0c1519;
+
+            box-shadow:
+                0 5px 20px rgba(0,0,0,0.22);
+        }
+
+
+        .message.received .message-bubble {
+
+            border-left:
+                3px solid var(--cyan);
+
+            background:
+
+                linear-gradient(
+                    135deg,
+                    #10191d,
+                    #0c1317
+                );
+        }
+
+
+        .message.sent .message-bubble {
+
+            border-right:
+                3px solid var(--green);
+
+            background:
+
+                linear-gradient(
+                    135deg,
+                    #0b1d15,
+                    #0a1511
+                );
+
+            border-top-color:
+                #27553f;
+
+            border-bottom-color:
+                #27553f;
+        }
+
+
+        .message.sent .message-bubble::after {
+
+            content:
+                "OUT";
+
+            position:
+                absolute;
+
+            right:
+                7px;
+
+            top:
+                -8px;
+
+            padding:
+                1px 4px;
+
+            color:
+                var(--green);
+
+            background:
+                #07120c;
+
+            border:
+                1px solid #2b6949;
+
+            font-size:
+                6px;
+
+            letter-spacing:
+                1px;
+        }
+
+
+        .message.received .message-bubble::after {
+
+            content:
+                "IN";
+
+            position:
+                absolute;
+
+            left:
+                7px;
+
+            top:
+                -8px;
+
+            padding:
+                1px 4px;
+
+            color:
+                var(--cyan);
+
+            background:
+                #071217;
+
+            border:
+                1px solid #28606c;
+
+            font-size:
+                6px;
+
+            letter-spacing:
+                1px;
+        }
+
+
+        .message-text {
+
+            color:
+                #d0ddd8;
+
+            font-size:
+                11px;
+
+            line-height:
+                1.65;
+
+            white-space:
+                pre-wrap;
+
+            word-break:
+                break-word;
+        }
+
+
+        .message-meta {
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                flex-end;
+
+            gap:
+                8px;
+
+            margin-top:
+                7px;
+
+            color:
+                var(--yellow);
+
+            font-size:
+                7px;
+
+            letter-spacing:
+                0.5px;
+
+            opacity:
+                0.75;
+        }
+
+
+        .message-status {
+
+            color:
+                var(--muted);
+
+            font-size:
+                7px;
+        }
+
+
+        .message-status.read {
+
+            color:
+                var(--green-bright);
+
+            text-shadow:
+                0 0 6px rgba(80,255,154,0.25);
+        }
+
+
+        /* =========================================================
+           EMPTY STATE
+        ========================================================= */
+
+        .empty-state {
+
+            position:
+                absolute;
+
+            inset:
+                76px 0 76px 0;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            text-align:
+                center;
+
+            z-index:
+                2;
+
+            pointer-events:
+                none;
+        }
+
+
+        .empty-terminal {
+
+            width:
+                min(550px, 85%);
+
+            padding:
+                34px;
+
+            position:
+                relative;
+
+            background:
+                rgba(8,16,19,0.88);
+
+            border:
+                1px solid #2b4249;
+
+            box-shadow:
+                0 0 50px rgba(0,0,0,0.35);
+        }
+
+
+        .empty-terminal::before {
+
+            content:
+                "";
+
+            position:
+                absolute;
+
+            left:
+                -1px;
+
+            top:
+                -1px;
+
+            width:
+                45px;
+
+            height:
+                45px;
+
+            border-left:
+                2px solid var(--cyan);
+
+            border-top:
+                2px solid var(--cyan);
+        }
+
+
+        .empty-terminal::after {
+
+            content:
+                "";
+
+            position:
+                absolute;
+
+            right:
+                -1px;
+
+            bottom:
+                -1px;
+
+            width:
+                45px;
+
+            height:
+                45px;
+
+            border-right:
+                2px solid var(--green);
+
+            border-bottom:
+                2px solid var(--green);
+        }
+
+
+        .terminal-symbol {
+
+            margin-bottom:
+                18px;
+
+            color:
+                var(--green);
+
+            font-size:
+                38px;
+
+            text-shadow:
+                0 0 18px rgba(80,255,154,0.3);
+        }
+
+
+        .empty-title {
+
+            color:
+                var(--white);
+
+            font-size:
+                15px;
+
+            font-weight:
+                bold;
+
+            letter-spacing:
+                3px;
+        }
+
+
+        .empty-description {
+
+            margin-top:
+                13px;
+
+            color:
+                var(--muted);
+
+            font-size:
+                9px;
+
+            line-height:
+                2;
+
+            letter-spacing:
+                1px;
+        }
+
+
+        .cursor {
+
+            display:
+                inline-block;
+
+            width:
+                7px;
+
+            height:
+                12px;
+
+            margin-left:
+                4px;
+
+            vertical-align:
+                middle;
+
+            background:
+                var(--green);
+
+            animation:
+                blink 1s infinite;
+        }
+
+
+        @keyframes blink {
+
+            0%,
+            45% {
+                opacity:
+                    1;
+            }
+
+            46%,
+            100% {
+                opacity:
+                    0;
+            }
+        }
+
+
+        /* =========================================================
+           MESSAGE INPUT
+        ========================================================= */
+
+        .message-input-area {
+
+            min-height:
+                82px;
+
+            padding:
+                12px 8% 15px;
+
+            position:
+                relative;
+
+            z-index:
+                5;
+
+            border-top:
+                2px solid #23353b;
+
+            background:
+                #091114;
+        }
+
+
+        .input-wrapper {
+
+            display:
+                flex;
+
+            gap:
+                9px;
+
+            align-items:
+                stretch;
+        }
+
+
+        #messageInput {
+
+            flex:
+                1;
+
+            min-height:
+                46px;
+
+            max-height:
+                130px;
+
+            resize:
+                vertical;
+
+            padding:
+                12px 14px;
+
+            outline:
+                none;
+
+            border:
+                1px solid #30434a;
+
+            background:
+                #05090b;
+
+            color:
+                var(--white);
+
+            font-family:
+                var(--font);
+
+            font-size:
+                11px;
+
+            transition:
+                0.2s;
+        }
+
+
+        #messageInput::placeholder {
+
+            color:
+                #52645e;
+        }
+
+
+        #messageInput:focus {
+
+            border-color:
+                var(--green);
+
+            box-shadow:
+                0 0 14px rgba(80,255,154,0.07);
+        }
+
+
+        #messageInput:disabled {
+
+            opacity:
+                0.35;
+
+            cursor:
+                not-allowed;
+        }
+
+
+        #sendButton {
+
+            width:
+                100px;
+
+            border:
+                1px solid var(--green);
+
+            background:
+                #0a2116;
+
+            color:
+                var(--green);
+
+            font-family:
+                var(--font);
+
+            font-size:
+                10px;
+
+            font-weight:
+                bold;
+
+            letter-spacing:
+                1px;
+
+            cursor:
+                pointer;
+
+            transition:
+                0.2s;
+        }
+
+
+        #sendButton:hover:not(:disabled) {
+
+            background:
+                #0d301e;
+
+            box-shadow:
+                0 0 18px rgba(80,255,154,0.13);
+
+            color:
+                var(--green-bright);
+        }
+
+
+        #sendButton:disabled {
+
+            opacity:
+                0.25;
+
+            cursor:
+                not-allowed;
+        }
+
+
+        .input-status {
+
+            margin-top:
+                7px;
+
+            color:
+                var(--muted2);
+
+            font-size:
+                7px;
+
+            letter-spacing:
+                1px;
+        }
+
+
+        .input-status::before {
+
+            content:
+                "LOCAL-MESH // ";
+
+            color:
+                var(--cyan);
+        }
+
+
+        /* =========================================================
+           MODALS
+        ========================================================= */
+
+        .modal-overlay {
+
+            position:
+                fixed;
+
+            inset:
+                0;
+
+            display:
+                none;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            padding:
+                20px;
+
+            background:
+                rgba(0,0,0,0.78);
+
+            z-index:
+                100;
+        }
+
+
+        .modal-overlay.active {
+
+            display:
+                flex;
+        }
+
+
+        .modal {
+
+            width:
+                min(440px, 100%);
+
+            padding:
+                26px;
+
+            position:
+                relative;
+
+            background:
+                #0b1418;
+
+            border:
+                1px solid var(--cyan);
+
+            box-shadow:
+                0 0 60px rgba(0,0,0,0.7),
+                0 0 20px rgba(66,223,255,0.06);
+        }
+
+
+        .modal::before {
+
+            content:
+                "AUTHENTICATED NODE";
+
+            position:
+                absolute;
+
+            top:
+                12px;
+
+            right:
+                18px;
+
+            color:
+                var(--green);
+
+            font-size:
+                7px;
+
+            letter-spacing:
+                1.5px;
+        }
+
+
+        .modal-title {
+
+            color:
+                var(--cyan);
+
+            font-size:
+                15px;
+
+            font-weight:
+                bold;
+
+            letter-spacing:
+                2px;
+
+            margin-bottom:
+                8px;
+        }
+
+
+        .modal-description {
+
+            margin-bottom:
+                22px;
+
+            color:
+                var(--muted);
+
+            font-size:
+                9px;
+
+            line-height:
+                1.7;
+        }
+
+
+        .modal label {
+
+            display:
+                block;
+
+            margin-bottom:
+                8px;
+
+            color:
+                var(--yellow);
+
+            font-size:
+                8px;
+
+            letter-spacing:
+                1.5px;
+        }
+
+
+        .modal input {
+
+            width:
+                100%;
+
+            height:
+                42px;
+
+            padding:
+                0 12px;
+
+            margin-bottom:
+                14px;
+
+            outline:
+                none;
+
+            border:
+                1px solid #30434a;
+
+            background:
+                #05090b;
+
+            color:
+                var(--white);
+
+            font-family:
+                var(--font);
+
+            font-size:
+                11px;
+        }
+
+
+        .modal input:focus {
+
+            border-color:
+                var(--cyan);
+
+            box-shadow:
+                0 0 12px rgba(66,223,255,0.07);
+        }
+
+
+        .modal-actions {
+
+            display:
+                flex;
+
+            gap:
+                9px;
+
+            margin-top:
+                8px;
+        }
+
+
+        .modal-actions button {
+
+            flex:
+                1;
+
+            height:
+                42px;
+
+            font-family:
+                var(--font);
+
+            font-size:
+                9px;
+
+            font-weight:
+                bold;
+
+            letter-spacing:
+                1px;
+
+            cursor:
+                pointer;
+        }
+
+
+        .cancel-button {
+
+            border:
+                1px solid #3a4649;
+
+            background:
+                #0b1113;
+
+            color:
+                var(--muted);
+        }
+
+
+        .cancel-button:hover {
+
+            border-color:
+                var(--red);
+
+            color:
+                var(--red);
+
+            background:
+                #1c0d11;
+        }
+
+
+        .start-button {
+
+            border:
+                1px solid var(--green);
+
+            background:
+                #092117;
+
+            color:
+                var(--green);
+        }
+
+
+        .start-button:hover {
+
+            background:
+                #0d301e;
+
+            box-shadow:
+                0 0 15px rgba(80,255,154,0.1);
+        }
+
+
+        #newChatMessage {
+
+            min-height:
+                15px;
+
+            margin-top:
+                13px;
+
+            font-size:
+                9px;
+
+            line-height:
+                1.5;
+        }
+
+
+        #newChatMessage.error {
+
+            color:
+                var(--red);
+        }
+
+
+        #newChatMessage.success {
+
+            color:
+                var(--green);
+        }
+
+
+        /* =========================================================
+           CHANGE PASSWORD
+        ========================================================= */
+
+        #changePasswordModal .modal {
+
+            border-color:
+                var(--yellow);
+
+            box-shadow:
+                0 0 60px rgba(0,0,0,0.7),
+                0 0 20px rgba(255,209,102,0.05);
+        }
+
+
+        #changePasswordModal .modal::before {
+
+            content:
+                "CREDENTIAL UPDATE";
+
+            color:
+                var(--yellow);
+        }
+
+
+        #changePasswordMessage {
+
+            min-height:
+                18px;
+
+            margin-top:
+                13px;
+
+            font-size:
+                9px;
+
+            line-height:
+                1.5;
+        }
+
+
+        #changePasswordMessage.error {
+
+            color:
+                var(--red);
+        }
+
+
+        #changePasswordMessage.success {
+
+            color:
+                var(--green);
+        }
+
+
+        #changePasswordButtonSubmit {
+
+            border:
+                1px solid var(--yellow);
+
+            background:
+                #211b08;
+
+            color:
+                var(--yellow);
+        }
+
+
+        #changePasswordButtonSubmit:hover:not(:disabled) {
+
+            background:
+                #30270b;
+
+            box-shadow:
+                0 0 15px rgba(255,209,102,0.10);
+        }
+
+
+        #changePasswordButtonSubmit:disabled {
+
+            opacity:
+                0.35;
+
+            cursor:
+                not-allowed;
+        }
+
+
+        /* =========================================================
+           CONNECTION STATUS
+        ========================================================= */
+
+        .connection-status {
+
+            position:
+                fixed;
+
+            left:
+                12px;
+
+            bottom:
+                7px;
+
+            z-index:
+                10000;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            gap:
+                7px;
+
+            color:
+                var(--muted);
+
+            font-size:
+                7px;
+
+            letter-spacing:
+                1px;
+
+            pointer-events:
+                none;
+        }
+
+
+        .connection-dot {
+
+            width:
+                6px;
+
+            height:
+                6px;
+
+            background:
+                var(--green);
+
+            box-shadow:
+                0 0 8px rgba(80,255,154,0.4);
+        }
+
+
+        /* =========================================================
+           MOBILE
+        ========================================================= */
+
+        @media (max-width: 800px) {
+
+            .sidebar {
+
+                width:
+                    100%;
+
+                min-width:
+                    100%;
+            }
+
+
+            .chat-area {
+
+                display:
+                    none;
+            }
+
+
+            .app.chat-open .sidebar {
+
+                display:
+                    none;
+            }
+
+
+            .app.chat-open .chat-area {
+
+                display:
+                    flex;
+            }
+
+
+            .back-button {
+
+                display:
+                    block;
+            }
+
+
+            .chat-header::before {
+
+                display:
+                    none;
+            }
+
+
+            .messages {
+
+                padding:
+                    25px 15px;
+            }
+
+
+            .message-input-area {
+
+                padding:
+                    10px 12px 13px;
+            }
+
+
+            .empty-terminal {
+
+                padding:
+                    25px 18px;
+            }
+        }
+
+
+        @media (max-width: 480px) {
+
+            .sidebar-header {
+
+                min-height:
+                    84px;
+            }
+
+
+            .brand-name {
+
+                font-size:
+                    14px;
+            }
+
+
+            .message-bubble {
+
+                max-width:
+                    88%;
+            }
+
+
+            #sendButton {
+
+                width:
+                    75px;
+            }
+
+
+            .chat-title {
+
+                font-size:
+                    11px;
+            }
+
+
+            .chat-subtitle {
+
+                font-size:
+                    7px;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div
+    class="app"
+    id="app"
+>
+
+
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
+
+    <aside
+        class="sidebar"
+        id="sidebar"
+    >
+
+
+        <div class="sidebar-header">
+
+
+            <div class="brand-row">
+
+
+                <div class="brand">
+
+
+                    <div class="brand-icon">
+                        >_
+                    </div>
+
+
+                    <div>
+
+
+                        <div class="brand-name">
+                            LAN<span>//</span>CHAT
+                        </div>
+
+
+                        <div class="user-info">
+                            {{ phone }}
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+                <div class="header-actions">
+
+
+                    <button
+                        class="icon-button"
+                        id="newChatButton"
+                        title="New secure channel"
+                    >
+                        +
+                    </button>
+
+
+                    <button
+                        class="icon-button"
+                        id="changePasswordButton"
+                        title="Change password"
+                    >
+                        #
+                    </button>
+
+
+                    <button
+                        class="icon-button"
+                        id="logoutButton"
+                        title="Terminate session"
+                    >
+                        ×
+                    </button>
+
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+        <!-- SEARCH -->
+
+        <div class="search-container">
+
+
+            <div class="search-box">
+
+
+                <input
+                    type="text"
+                    id="searchInput"
+                    class="search-input"
+                    placeholder="search channels..."
+                    autocomplete="off"
+                >
+
+
+            </div>
+
+
+        </div>
+
+
+        <!-- CONVERSATIONS -->
+
+        <div
+            class="conversations"
+            id="conversationList"
+        >
+
+
+            <div class="list-label">
+                ACTIVE CHANNELS
+            </div>
+
+
+        </div>
+
+
+    </aside>
+
+
+    <!-- =====================================================
+         CHAT
+    ====================================================== -->
+
+    <main
+        class="chat-area"
+        id="chatArea"
+    >
+
+
+        <!-- HEADER -->
+
+        <header class="chat-header">
+
+
+            <button
+                class="back-button"
+                id="backButton"
+            >
+                ←
+            </button>
+
+
+            <div
+                class="chat-header-avatar"
+                id="chatHeaderAvatar"
+            >
+                ##
+            </div>
+
+
+            <div class="chat-title-area">
+
+
+                <div
+                    class="chat-title"
+                    id="chatTitle"
+                >
+                    SELECT A CHANNEL
+                </div>
+
+
+                <div
+                    class="chat-subtitle"
+                    id="chatSubtitle"
+                >
+                    Awaiting secure connection
+                </div>
+
+
+            </div>
+
+
+        </header>
+
+
+        <!-- EMPTY STATE -->
+
+        <div
+            class="empty-state"
+            id="emptyState"
+        >
+
+
+            <div class="empty-terminal">
+
+
+                <div class="terminal-symbol">
+                    [ ]
+                </div>
+
+
+                <div class="empty-title">
+                    SYSTEM READY
+                </div>
+
+
+                <div class="empty-description">
+
+                    NO CHANNEL SELECTED
+                    <br>
+
+                    SELECT AN EXISTING CHANNEL FROM THE NODE LIST
+                    <br>
+
+                    OR INITIALIZE A NEW SECURE CHANNEL
+
+                    <span class="cursor"></span>
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+        <!-- MESSAGES -->
+
+        <div
+            class="messages"
+            id="messages"
+            style="display:none;"
+        ></div>
+
+
+        <!-- INPUT -->
+
+        <div class="message-input-area">
+
+
+            <div class="input-wrapper">
+
+
+                <textarea
+                    id="messageInput"
+                    placeholder="channel not selected..."
+                    rows="1"
+                    disabled
+                ></textarea>
+
+
+                <button
+                    id="sendButton"
+                    disabled
+                >
+                    SEND >
+                </button>
+
+
+            </div>
+
+
+            <div class="input-status">
+                secure transport ready
+            </div>
+
+
+        </div>
+
+
+    </main>
+
+
+</div>
+
+
+<!-- =========================================================
+     NEW CHAT MODAL
+========================================================= -->
+
+<div
+    class="modal-overlay"
+    id="newChatModal"
+>
+
+
+    <div class="modal">
+
+
+        <div class="modal-title">
+            // NEW_CHANNEL
+        </div>
+
+
+        <div class="modal-description">
+
+            Initialize a direct secure communication channel
+            with another registered LAN node.
+
+        </div>
+
+
+        <label for="newChatPhone">
+            TARGET NODE / PHONE NUMBER
+        </label>
+
+
+        <input
+            type="text"
+            id="newChatPhone"
+            placeholder="01011111111"
+            maxlength="11"
+            autocomplete="off"
+        >
+
+
+        <div class="modal-actions">
+
+
+            <button
+                class="cancel-button"
+                id="cancelNewChat"
+            >
+                CANCEL
+            </button>
+
+
+            <button
+                class="start-button"
+                id="startNewChat"
+            >
+                CONNECT >
+            </button>
+
+
+        </div>
+
+
+        <div
+            id="newChatMessage"
+        ></div>
+
+
+    </div>
+
+
+</div>
+
+
+<!-- =========================================================
+     CHANGE PASSWORD MODAL
+========================================================= -->
+
+<div
+    class="modal-overlay"
+    id="changePasswordModal"
+>
+
+
+    <div class="modal">
+
+
+        <div class="modal-title">
+            // CHANGE_CREDENTIALS
+        </div>
+
+
+        <div class="modal-description">
+
+            Update your LAN//CHAT authentication credentials.
+            Your current password is required before the
+            credential update can be committed.
+
+        </div>
+
+
+        <label for="currentPassword">
+            CURRENT PASSWORD
+        </label>
+
+
+        <input
+            type="password"
+            id="currentPassword"
+            placeholder="enter current password"
+            autocomplete="current-password"
+        >
+
+
+        <label for="newPassword">
+            NEW PASSWORD
+        </label>
+
+
+        <input
+            type="password"
+            id="newPassword"
+            placeholder="minimum 8 characters"
+            autocomplete="new-password"
+        >
+
+
+        <label for="confirmPassword">
+            CONFIRM NEW PASSWORD
+        </label>
+
+
+        <input
+            type="password"
+            id="confirmPassword"
+            placeholder="repeat new password"
+            autocomplete="new-password"
+        >
+
+
+        <div class="modal-actions">
+
+
+            <button
+                class="cancel-button"
+                id="cancelChangePassword"
+            >
+                CANCEL
+            </button>
+
+
+            <button
+                id="changePasswordButtonSubmit"
+            >
+                UPDATE >
+            </button>
+
+
+        </div>
+
+
+        <div
+            id="changePasswordMessage"
+        ></div>
+
+
+    </div>
+
+
+</div>
+
+
+<!-- CONNECTION STATUS -->
+
+<div class="connection-status">
+
+
+    <span
+        class="connection-dot"
+        id="connectionDot"
+    ></span>
+
+
+    <span id="connectionText">
+        NODE OFFLINE
+    </span>
+
+
+</div>
+
+
+<!-- SOCKET.IO -->
+
+<script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+
+
+<script>
+
+
+    /* =========================================================
+       STATE
+    ========================================================= */
+
+    const myPhone =
+        "{{ phone }}";
+
+
+    let currentReceiver =
+        null;
+
+
+    let allMessages =
+        [];
+
+
+    let conversations =
+        {};
+
+
+    /*
+     * IMPORTANT:
+     * This flag prevents socket events/reconnect behavior
+     * from interfering with a deliberate logout.
+     */
+
+    let isLoggingOut =
+        false;
+
+
+    const storageKey =
+        `lan_chat_receiver_${myPhone}`;
+
+
+    /* =========================================================
+       DOM
+    ========================================================= */
+
+    const app =
+        document.getElementById("app");
+
+
+    const conversationList =
+        document.getElementById(
+            "conversationList"
+        );
+
+
+    const searchInput =
+        document.getElementById(
+            "searchInput"
+        );
+
+
+    const messagesContainer =
+        document.getElementById(
+            "messages"
+        );
+
+
+    const emptyState =
+        document.getElementById(
+            "emptyState"
+        );
+
+
+    const chatTitle =
+        document.getElementById(
+            "chatTitle"
+        );
+
+
+    const chatSubtitle =
+        document.getElementById(
+            "chatSubtitle"
+        );
+
+
+    const chatHeaderAvatar =
+        document.getElementById(
+            "chatHeaderAvatar"
+        );
+
+
+    const messageInput =
+        document.getElementById(
+            "messageInput"
+        );
+
+
+    const sendButton =
+        document.getElementById(
+            "sendButton"
+        );
+
+
+    const newChatButton =
+        document.getElementById(
+            "newChatButton"
+        );
+
+
+    const changePasswordButton =
+        document.getElementById(
+            "changePasswordButton"
+        );
+
+
+    const logoutButton =
+        document.getElementById(
+            "logoutButton"
+        );
+
+
+    const backButton =
+        document.getElementById(
+            "backButton"
+        );
+
+
+    const newChatModal =
+        document.getElementById(
+            "newChatModal"
+        );
+
+
+    const newChatPhone =
+        document.getElementById(
+            "newChatPhone"
+        );
+
+
+    const cancelNewChat =
+        document.getElementById(
+            "cancelNewChat"
+        );
+
+
+    const startNewChatButton =
+        document.getElementById(
+            "startNewChat"
+        );
+
+
+    const newChatMessage =
+        document.getElementById(
+            "newChatMessage"
+        );
+
+
+    const changePasswordModal =
+        document.getElementById(
+            "changePasswordModal"
+        );
+
+
+    const currentPassword =
+        document.getElementById(
+            "currentPassword"
+        );
+
+
+    const newPassword =
+        document.getElementById(
+            "newPassword"
+        );
+
+
+    const confirmPassword =
+        document.getElementById(
+            "confirmPassword"
+        );
+
+
+    const cancelChangePassword =
+        document.getElementById(
+            "cancelChangePassword"
+        );
+
+
+    const changePasswordButtonSubmit =
+        document.getElementById(
+            "changePasswordButtonSubmit"
+        );
+
+
+    const changePasswordMessage =
+        document.getElementById(
+            "changePasswordMessage"
+        );
+
+
+    const connectionDot =
+        document.getElementById(
+            "connectionDot"
+        );
+
+
+    const connectionText =
+        document.getElementById(
+            "connectionText"
+        );
+
+
+    /* =========================================================
+       SOCKET
+    ========================================================= */
+
+    const socket =
+        io(
+            "http://192.168.1.9:5000",
+            {
+                transports: [
+                    "polling",
+                    "websocket"
+                ],
+
+                withCredentials: true
+            }
+        );
+
+
+    socket.on(
+        "connect",
+        function() {
+
+            /*
+             * If logout has already started and the socket
+             * somehow reconnects before the page redirects,
+             * immediately terminate it again.
+             */
+
+            if (isLoggingOut) {
+
+                socket.disconnect();
+
+                return;
+
+            }
+
+
+            connectionText.textContent =
+                "NODE ONLINE // SOCKET LINK ACTIVE";
+
+
+            connectionDot.style.background =
+                "#50ff9a";
+
+
+            console.log(
+                "Socket connected:",
+                socket.id
+            );
+
+        }
+    );
+
+
+    socket.on(
+        "connect_error",
+        function(error) {
+
+            if (isLoggingOut) {
+
+                return;
+
+            }
+
+
+            connectionText.textContent =
+                "NODE ONLINE // POLLING MODE";
+
+
+            connectionDot.style.background =
+                "#ffd166";
+
+
+            console.log(
+                "Socket connection error:",
+                error
+            );
+
+        }
+    );
+
+
+    socket.on(
+        "disconnect",
+        function() {
+
+            connectionText.textContent =
+                "NODE DISCONNECTED";
+
+
+            connectionDot.style.background =
+                "#ff5364";
+
+        }
+    );
+
+
+    /* =========================================================
+       INCOMING MESSAGE
+    ========================================================= */
+
+    socket.on(
+        "new_message",
+        async function(message) {
+
+            if (isLoggingOut) {
+
+                return;
+
+            }
+
+
+            console.log(
+                "Incoming message:",
+                message
+            );
+
+
+            const exists =
+                allMessages.some(
+                    function(m) {
+
+                        return (
+                            String(m.id) ===
+                            String(message.id)
+                        );
+
+                    }
+                );
+
+
+            if (!exists) {
+
+                allMessages.push(
+                    message
+                );
+
+            }
+
+
+            const sender =
+                String(message.sender);
+
+
+            const receiver =
+                String(message.receiver);
+
+
+            const otherUser =
+                sender ===
+                String(myPhone)
+
+                    ? receiver
+
+                    : sender;
+
+
+            updateConversationFromMessage(
+                message,
+                otherUser
+            );
+
+
+            renderConversations();
+
+
+            if (
+                currentReceiver &&
+                String(currentReceiver) ===
+                String(otherUser)
+            ) {
+
+                renderCurrentChat();
+
+                await markCurrentChatAsRead();
+
+            }
+
+        }
+    );
+
+
+    /* =========================================================
+       MESSAGE SENT
+    ========================================================= */
+
+    socket.on(
+        "message_sent",
+        function(message) {
+
+            if (isLoggingOut) {
+
+                return;
+
+            }
+
+
+            console.log(
+                "Message sent:",
+                message
+            );
+
+        }
+    );
+
+
+    /* =========================================================
+       MESSAGE READ
+    ========================================================= */
+
+    socket.on(
+        "message_read",
+        function(data) {
+
+            if (isLoggingOut) {
+
+                return;
+
+            }
+
+
+            const messageId =
+                data.message_id;
+
+
+            const message =
+                allMessages.find(
+                    function(m) {
+
+                        return (
+                            Number(m.id) ===
+                            Number(messageId)
+                        );
+
+                    }
+                );
+
+
+            if (message) {
+
+                message.status =
+                    "read";
+
+
+                renderCurrentChat();
+
+            }
+
+        }
+    );
+
+
+    /* =========================================================
+       PAGE LOAD
+    ========================================================= */
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        function() {
+
+            currentReceiver =
+                null;
+
+
+            resetChatArea();
+
+
+            loadAllMessages();
+
+        }
+    );
+
+
+    /* =========================================================
+       LOAD MESSAGES
+    ========================================================= */
+
+    async function loadAllMessages() {
+
+        try {
+
+            const response =
+                await fetch(
+                    `/api/messages/${myPhone}`
+                );
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Failed to load messages"
+                );
+
+            }
+
+
+            const data =
+                await response.json();
+
+
+            if (
+                Array.isArray(data)
+            ) {
+
+                allMessages =
+                    data;
+
+            } else if (
+                data &&
+                Array.isArray(
+                    data.messages
+                )
+            ) {
+
+                allMessages =
+                    data.messages;
+
+            } else {
+
+                allMessages =
+                    [];
+
+            }
+
+
+            buildConversations();
+
+
+            renderConversations();
+
+
+        } catch (error) {
+
+            console.error(
+                "Load messages error:",
+                error
+            );
+
+        }
+
+    }
+
+
+    /* =========================================================
+       BUILD CONVERSATIONS
+    ========================================================= */
+
+    function buildConversations() {
+
+        conversations =
+            {};
+
+
+        allMessages.forEach(
+            function(message) {
+
+                const sender =
+                    String(
+                        message.sender
+                    );
+
+
+                const receiver =
+                    String(
+                        message.receiver
+                    );
+
+
+                const otherUser =
+                    sender ===
+                    String(myPhone)
+
+                        ? receiver
+
+                        : sender;
+
+
+                updateConversationFromMessage(
+                    message,
+                    otherUser,
+                    false
+                );
+
+            }
+        );
+
+    }
+
+
+    /* =========================================================
+       UPDATE CONVERSATION
+    ========================================================= */
+
+    function updateConversationFromMessage(
+        message,
+        otherUser,
+        incrementUnread = true
+    ) {
+
+        const key =
+            String(otherUser);
+
+
+        if (
+            !conversations[key]
+        ) {
+
+            conversations[key] = {
+
+                phone:
+                    key,
+
+                lastMessage:
+                    message.message || "",
+
+                timestamp:
+                    message.timestamp || "",
+
+                unread:
+                    0
+
+            };
+
+        } else {
+
+            conversations[key]
+                .lastMessage =
+                    message.message || "";
+
+
+            conversations[key]
+                .timestamp =
+                    message.timestamp || "";
+
+        }
+
+
+        if (
+            incrementUnread &&
+            String(message.sender) !==
+                String(myPhone) &&
+            String(currentReceiver) !==
+                String(otherUser)
+        ) {
+
+            conversations[key].unread =
+                (
+                    conversations[key]
+                        .unread || 0
+                ) + 1;
+
+        }
+
+    }
+
+
+    /* =========================================================
+       RENDER CONVERSATIONS
+    ========================================================= */
+
+    function renderConversations(
+        filter =
+            searchInput.value.trim()
+    ) {
+
+        conversationList.innerHTML =
+            "";
+
+
+        const label =
+            document.createElement(
+                "div"
+            );
+
+
+        label.className =
+            "list-label";
+
+
+        label.textContent =
+            "ACTIVE CHANNELS";
+
+
+        conversationList.appendChild(
+            label
+        );
+
+
+        const keys =
+            Object.keys(
+                conversations
+            );
+
+
+        keys.sort(
+            function(a, b) {
+
+                const dateA =
+                    new Date(
+                        conversations[a]
+                            .timestamp
+                    );
+
+
+                const dateB =
+                    new Date(
+                        conversations[b]
+                            .timestamp
+                    );
+
+
+                return dateB - dateA;
+
+            }
+        );
+
+
+        const normalizedFilter =
+            filter.toLowerCase();
+
+
+        const filtered =
+            keys.filter(
+                function(phone) {
+
+                    return phone
+                        .toLowerCase()
+                        .includes(
+                            normalizedFilter
+                        );
+
+                }
+            );
+
+
+        if (
+            filtered.length === 0
+        ) {
+
+            const empty =
+                document.createElement(
+                    "div"
+                );
+
+
+            empty.style.padding =
+                "30px 10px";
+
+
+            empty.style.textAlign =
+                "center";
+
+
+            empty.style.color =
+                "#53635e";
+
+
+            empty.style.fontSize =
+                "9px";
+
+
+            empty.style.lineHeight =
+                "1.8";
+
+
+            empty.textContent =
+                keys.length === 0
+
+                    ? "NO ACTIVE CHANNELS"
+
+                    : "NO MATCHING NODES";
+
+
+            conversationList.appendChild(
+                empty
+            );
+
+
+            return;
+
+        }
+
+
+        filtered.forEach(
+            function(phone) {
+
+                const conversation =
+                    conversations[phone];
+
+
+                const item =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                item.className =
+                    "conversation";
+
+
+                if (
+                    currentReceiver &&
+                    String(
+                        currentReceiver
+                    ) ===
+                    String(phone)
+                ) {
+
+                    item.classList.add(
+                        "active"
+                    );
+
+                }
+
+
+                const avatar =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                avatar.className =
+                    "avatar";
+
+
+                avatar.textContent =
+                    getInitials(
+                        phone
+                    );
+
+
+                const info =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                info.className =
+                    "conversation-info";
+
+
+                const top =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                top.className =
+                    "conversation-top";
+
+
+                const name =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                name.className =
+                    "conversation-name";
+
+
+                name.textContent =
+                    phone;
+
+
+                const time =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                time.className =
+                    "conversation-time";
+
+
+                time.textContent =
+                    formatTime(
+                        conversation.timestamp
+                    );
+
+
+                top.appendChild(
+                    name
+                );
+
+
+                top.appendChild(
+                    time
+                );
+
+
+                const bottom =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                bottom.className =
+                    "conversation-bottom";
+
+
+                const preview =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                preview.className =
+                    "conversation-preview";
+
+
+                preview.textContent =
+                    conversation.lastMessage ||
+                    "NO TRANSMISSION";
+
+
+                bottom.appendChild(
+                    preview
+                );
+
+
+                if (
+                    conversation.unread &&
+                    conversation.unread > 0
+                ) {
+
+                    const unread =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    unread.className =
+                        "unread";
+
+
+                    unread.textContent =
+                        conversation.unread > 99
+
+                            ? "99+"
+
+                            : conversation.unread;
+
+
+                    bottom.appendChild(
+                        unread
+                    );
+
+                }
+
+
+                info.appendChild(
+                    top
+                );
+
+
+                info.appendChild(
+                    bottom
+                );
+
+
+                item.appendChild(
+                    avatar
+                );
+
+
+                item.appendChild(
+                    info
+                );
+
+
+                item.addEventListener(
+                    "click",
+                    async function() {
+
+                        await openChat(
+                            phone
+                        );
+
+                    }
+                );
+
+
+                conversationList.appendChild(
+                    item
+                );
+
+            }
+        );
+
+    }
+
+
+    /* =========================================================
+       RESET CHAT
+    ========================================================= */
+
+    function resetChatArea() {
+
+        currentReceiver =
+            null;
+
+
+        emptyState.style.display =
+            "flex";
+
+
+        messagesContainer.style.display =
+            "none";
+
+
+        chatTitle.textContent =
+            "SELECT A CHANNEL";
+
+
+        chatSubtitle.textContent =
+            "Awaiting secure connection";
+
+
+        chatHeaderAvatar.style.display =
+            "none";
+
+
+        messageInput.disabled =
+            true;
+
+
+        sendButton.disabled =
+            true;
+
+
+        messageInput.placeholder =
+            "channel not selected...";
+
+
+        messageInput.value =
+            "";
+
+
+        app.classList.remove(
+            "chat-open"
+        );
+
+
+        renderConversations();
+
+    }
+
+
+    /* =========================================================
+       CLOSE ACTIVE CHAT
+    ========================================================= */
+
+    function closeActiveChat() {
+
+        if (!currentReceiver) {
+
+            return;
+
+        }
+
+
+        console.log(
+            "Closing active channel:",
+            currentReceiver
+        );
+
+
+        resetChatArea();
+
+    }
+
+
+    /* =========================================================
+       OPEN CHAT
+    ========================================================= */
+
+    async function openChat(
+        phone
+    ) {
+
+        if (isLoggingOut) {
+
+            return;
+
+        }
+
+
+        currentReceiver =
+            String(phone);
+
+
+        emptyState.style.display =
+            "none";
+
+
+        messagesContainer.style.display =
+            "block";
+
+
+        chatTitle.textContent =
+            currentReceiver;
+
+
+        chatSubtitle.textContent =
+            "SECURE DIRECT CHANNEL";
+
+
+        chatHeaderAvatar.style.display =
+            "flex";
+
+
+        chatHeaderAvatar.textContent =
+            getInitials(
+                currentReceiver
+            );
+
+
+        messageInput.disabled =
+            false;
+
+
+        sendButton.disabled =
+            false;
+
+
+        messageInput.placeholder =
+            "type encrypted message...";
+
+
+        app.classList.add(
+            "chat-open"
+        );
+
+
+        localStorage.setItem(
+            storageKey,
+            currentReceiver
+        );
+
+
+        if (
+            conversations[
+                currentReceiver
+            ]
+        ) {
+
+            conversations[
+                currentReceiver
+            ].unread =
+                0;
+
+        }
+
+
+        renderConversations();
+
+
+        renderCurrentChat();
+
+
+        await markCurrentChatAsRead();
+
+
+        setTimeout(
+            function() {
+
+                if (!isLoggingOut) {
+
+                    messageInput.focus();
+
+                }
+
+            },
+            100
+        );
+
+    }
+
+
+    /* =========================================================
+       RENDER CURRENT CHAT
+    ========================================================= */
+
+    function renderCurrentChat() {
+
+        messagesContainer.innerHTML =
+            "";
+
+
+        if (!currentReceiver) {
+
+            return;
+
+        }
+
+
+        const filtered =
+            allMessages.filter(
+                function(message) {
+
+                    return (
+
+                        (
+                            String(
+                                message.sender
+                            ) ===
+                            String(myPhone)
+
+                            &&
+
+                            String(
+                                message.receiver
+                            ) ===
+                            String(
+                                currentReceiver
+                            )
+                        )
+
+                        ||
+
+                        (
+                            String(
+                                message.sender
+                            ) ===
+                            String(
+                                currentReceiver
+                            )
+
+                            &&
+
+                            String(
+                                message.receiver
+                            ) ===
+                            String(
+                                myPhone
+                            )
+                        )
+
+                    );
+
+                }
+            );
+
+
+        if (
+            filtered.length === 0
+        ) {
+
+            const empty =
+                document.createElement(
+                    "div"
+                );
+
+
+            empty.style.height =
+                "100%";
+
+
+            empty.style.display =
+                "flex";
+
+
+            empty.style.alignItems =
+                "center";
+
+
+            empty.style.justifyContent =
+                "center";
+
+
+            empty.style.textAlign =
+                "center";
+
+
+            empty.style.color =
+                "#53635e";
+
+
+            empty.style.fontSize =
+                "9px";
+
+
+            empty.style.lineHeight =
+                "2";
+
+
+            empty.innerHTML =
+                "CHANNEL ESTABLISHED<br>" +
+                "NO TRANSMISSIONS YET";
+
+
+            messagesContainer.appendChild(
+                empty
+            );
+
+
+            return;
+
+        }
+
+
+        let lastDate =
+            null;
+
+
+        filtered.forEach(
+            function(message) {
+
+                const date =
+                    formatDate(
+                        message.timestamp
+                    );
+
+
+                if (
+                    date !== lastDate
+                ) {
+
+                    const divider =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    divider.className =
+                        "date-divider";
+
+
+                    divider.textContent =
+                        `// ${date} //`;
+
+
+                    messagesContainer.appendChild(
+                        divider
+                    );
+
+
+                    lastDate =
+                        date;
+
+                }
+
+
+                addMessageToScreen(
+                    message,
+                    false
+                );
+
+            }
+        );
+
+
+        scrollMessages();
+
+    }
+
+
+    /* =========================================================
+       ADD MESSAGE
+    ========================================================= */
+
+    function addMessageToScreen(
+        message,
+        scroll = true
+    ) {
+
+        if (!currentReceiver) {
+
+            return;
+
+        }
+
+
+        const sender =
+            String(
+                message.sender
+            );
+
+
+        const isSent =
+            sender ===
+            String(myPhone);
+
+
+        const wrapper =
+            document.createElement(
+                "div"
+            );
+
+
+        wrapper.className =
+            "message " +
+            (
+                isSent
+                    ? "sent"
+                    : "received"
+            );
+
+
+        const bubble =
+            document.createElement(
+                "div"
+            );
+
+
+        bubble.className =
+            "message-bubble";
+
+
+        const text =
+            document.createElement(
+                "div"
+            );
+
+
+        text.className =
+            "message-text";
+
+
+        text.textContent =
+            message.message || "";
+
+
+        const meta =
+            document.createElement(
+                "div"
+            );
+
+
+        meta.className =
+            "message-meta";
+
+
+        const time =
+            document.createElement(
+                "span"
+            );
+
+
+        time.textContent =
+            formatTime(
+                message.timestamp
+            );
+
+
+        meta.appendChild(
+            time
+        );
+
+
+        if (isSent) {
+
+            const status =
+                document.createElement(
+                    "span"
+                );
+
+
+            status.className =
+                "message-status";
+
+
+            status.textContent =
+                getStatusText(
+                    message
+                );
+
+
+            if (
+                message.status ===
+                "read"
+            ) {
+
+                status.classList.add(
+                    "read"
+                );
+
+            }
+
+
+            meta.appendChild(
+                status
+            );
+
+        }
+
+
+        bubble.appendChild(
+            text
+        );
+
+
+        bubble.appendChild(
+            meta
+        );
+
+
+        wrapper.appendChild(
+            bubble
+        );
+
+
+        messagesContainer.appendChild(
+            wrapper
+        );
+
+
+        if (scroll) {
+
+            scrollMessages();
+
+        }
+
+    }
+
+
+    /* =========================================================
+       SEND MESSAGE
+    ========================================================= */
+
+    async function sendMessage() {
+
+        if (
+            isLoggingOut ||
+            !currentReceiver
+        ) {
+
+            return;
+
+        }
+
+
+        const text =
+            messageInput.value.trim();
+
+
+        if (!text) {
+
+            return;
+
+        }
+
+
+        const receiver =
+            currentReceiver;
+
+
+        sendButton.disabled =
+            true;
+
+
+        try {
+
+            const response =
+                await fetch(
+                    "/api/send-message",
+                    {
+
+                        method:
+                            "POST",
+
+                        headers:
+                            {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                        body:
+                            JSON.stringify({
+
+                                sender:
+                                    myPhone,
+
+                                receiver:
+                                    receiver,
+
+                                message:
+                                    text
+
+                            })
+
+                    }
+                );
+
+
+            const data =
+                await response.json();
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    data.message ||
+                    "Failed to send message"
+                );
+
+            }
+
+
+            let sentMessage =
+                null;
+
+
+            if (
+                data.message &&
+                typeof data.message ===
+                    "object"
+            ) {
+
+                sentMessage =
+                    data.message;
+
+            }
+
+            else if (
+                data.id
+            ) {
+
+                sentMessage =
+                    data;
+
+            }
+
+            else if (
+                data.message_id
+            ) {
+
+                sentMessage = {
+
+                    id:
+                        data.message_id,
+
+                    sender:
+                        myPhone,
+
+                    receiver:
+                        receiver,
+
+                    message:
+                        text,
+
+                    timestamp:
+                        new Date().toISOString(),
+
+                    status:
+                        "sent"
+
+                };
+
+            }
+
+            else {
+
+                sentMessage = {
+
+                    id:
+                        "local-" +
+                        Date.now(),
+
+                    sender:
+                        myPhone,
+
+                    receiver:
+                        receiver,
+
+                    message:
+                        text,
+
+                    timestamp:
+                        new Date().toISOString(),
+
+                    status:
+                        "sent"
+
+                };
+
+            }
+
+
+            const alreadyExists =
+                allMessages.some(
+                    function(m) {
+
+                        return (
+                            String(m.id) ===
+                            String(
+                                sentMessage.id
+                            )
+                        );
+
+                    }
+                );
+
+
+            if (!alreadyExists) {
+
+                allMessages.push(
+                    sentMessage
+                );
+
+            }
+
+
+            updateConversationFromMessage(
+                sentMessage,
+                receiver,
+                false
+            );
+
+
+            renderCurrentChat();
+
+
+            renderConversations();
+
+
+            messageInput.value =
+                "";
+
+
+            messageInput.style.height =
+                "auto";
+
+
+        } catch (error) {
+
+            console.error(
+                "Send message error:",
+                error
+            );
+
+
+            alert(
+                error.message ||
+                "Failed to send message"
+            );
+
+        } finally {
+
+            sendButton.disabled =
+                false;
+
+
+            if (!isLoggingOut) {
+
+                messageInput.focus();
+
+            }
+
+        }
+
+    }
+
+
+    /* =========================================================
+       MARK CURRENT CHAT READ
+    ========================================================= */
+
+    async function markCurrentChatAsRead() {
+
+        if (
+            isLoggingOut ||
+            !currentReceiver
+        ) {
+
+            return;
+
+        }
+
+
+        const unreadMessages =
+            allMessages.filter(
+                function(message) {
+
+                    return (
+
+                        String(
+                            message.sender
+                        ) ===
+                        String(
+                            currentReceiver
+                        )
+
+                        &&
+
+                        String(
+                            message.receiver
+                        ) ===
+                        String(
+                            myPhone
+                        )
+
+                        &&
+
+                        message.status !==
+                        "read"
+
+                    );
+
+                }
+            );
+
+
+        for (
+            const message
+            of unreadMessages
+        ) {
+
+            await markAsRead(
+                message.id
+            );
+
+        }
+
+
+        if (
+            conversations[
+                currentReceiver
+            ]
+        ) {
+
+            conversations[
+                currentReceiver
+            ].unread =
+                0;
+
+        }
+
+
+        renderConversations();
+
+    }
+
+
+    /* =========================================================
+       MARK READ
+    ========================================================= */
+
+    async function markAsRead(
+        messageId
+    ) {
+
+        if (isLoggingOut) {
+
+            return;
+
+        }
+
+
+        try {
+
+            const response =
+                await fetch(
+                    `/api/messages/${messageId}/read`,
+                    {
+                        method:
+                            "POST",
+
+                        headers:
+                            {
+                                "Content-Type":
+                                    "application/json"
+                            }
+                    }
+                );
+
+
+            if (!response.ok) {
+
+                return;
+
+            }
+
+
+            const message =
+                allMessages.find(
+                    function(m) {
+
+                        return (
+                            Number(m.id) ===
+                            Number(messageId)
+                        );
+
+                    }
+                );
+
+
+            if (message) {
+
+                message.status =
+                    "read";
+
+            }
+
+
+            if (
+                socket.connected &&
+                !isLoggingOut
+            ) {
+
+                socket.emit(
+                    "message_read",
+                    {
+                        message_id:
+                            messageId
+                    }
+                );
+
+            }
+
+
+        } catch (error) {
+
+            console.error(
+                "Mark read error:",
+                error
+            );
+
+        }
+
+    }
+
+
+    /* =========================================================
+       NEW CHAT
+    ========================================================= */
+
+    newChatButton.addEventListener(
+        "click",
+        function() {
+
+            if (isLoggingOut) {
+
+                return;
+
+            }
+
+
+            newChatMessage.textContent =
+                "";
+
+
+            newChatMessage.className =
+                "";
+
+
+            newChatPhone.value =
+                "";
+
+
+            newChatModal.classList.add(
+                "active"
+            );
+
+
+            setTimeout(
+                function() {
+
+                    newChatPhone.focus();
+
+                },
+                100
+            );
+
+        }
+    );
+
+
+    cancelNewChat.addEventListener(
+        "click",
+        function() {
+
+            closeNewChatModal();
+
+        }
+    );
+
+
+    newChatModal.addEventListener(
+        "click",
+        function(event) {
+
+            if (
+                event.target ===
+                newChatModal
+            ) {
+
+                closeNewChatModal();
+
+            }
+
+        }
+    );
+
+
+    function closeNewChatModal() {
+
+        newChatModal.classList.remove(
+            "active"
+        );
+
+
+        newChatPhone.value =
+            "";
+
+
+        newChatMessage.textContent =
+            "";
+
+
+        newChatMessage.className =
+            "";
+
+    }
+
+
+    /* =========================================================
+       START NEW CHAT
+    ========================================================= */
+
+    startNewChatButton.addEventListener(
+        "click",
+        startNewChat
+    );
+
+
+    newChatPhone.addEventListener(
+        "keydown",
+        function(event) {
+
+            if (
+                event.key ===
+                "Enter"
+            ) {
+
+                startNewChat();
+
+            }
+
+        }
+    );
+
+
+    async function startNewChat() {
+
+        const phone =
+            newChatPhone.value.trim();
+
+
+        const phoneRegex =
+            /^01[0125][0-9]{8}$/;
+
+
+        if (
+            !phoneRegex.test(phone)
+        ) {
+
+            showNewChatMessage(
+                "INVALID NODE ADDRESS.",
+                "error"
+            );
+
+
+            return;
+
+        }
+
+
+        if (
+            phone ===
+            String(myPhone)
+        ) {
+
+            showNewChatMessage(
+                "SELF CONNECTION IS NOT ALLOWED.",
+                "error"
+            );
+
+
+            return;
+
+        }
+
+
+        startNewChatButton.disabled =
+            true;
+
+
+        startNewChatButton.textContent =
+            "SCANNING...";
+
+
+        try {
+
+            const response =
+                await fetch(
+                    `/api/user/${phone}`
+                );
+
+
+            const data =
+                await response.json();
+
+
+            if (
+                !response.ok ||
+                !data.exists
+            ) {
+
+                showNewChatMessage(
+                    "TARGET NODE DOES NOT EXIST.",
+                    "error"
+                );
+
+
+                return;
+
+            }
+
+
+            if (
+                !conversations[phone]
+            ) {
+
+                conversations[phone] = {
+
+                    phone:
+                        phone,
+
+                    lastMessage:
+                        "CHANNEL INITIALIZED",
+
+                    timestamp:
+                        new Date()
+                            .toISOString(),
+
+                    unread:
+                        0
+
+                };
+
+            }
+
+
+            renderConversations();
+
+
+            closeNewChatModal();
+
+
+            await openChat(
+                phone
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                "New chat error:",
+                error
+            );
+
+
+            showNewChatMessage(
+                "UNABLE TO CONTACT NODE.",
+                "error"
+            );
+
+        } finally {
+
+            startNewChatButton.disabled =
+                false;
+
+
+            startNewChatButton.textContent =
+                "CONNECT >";
+
+        }
+
+    }
+
+
+    function showNewChatMessage(
+        text,
+        type
+    ) {
+
+        newChatMessage.textContent =
+            text;
+
+
+        newChatMessage.className =
+            type || "";
+
+    }
+
+
+    /* =========================================================
+       CHANGE PASSWORD
+    ========================================================= */
+
+    changePasswordButton.addEventListener(
+        "click",
+        function() {
+
+            if (isLoggingOut) {
+
+                return;
+
+            }
+
+
+            currentPassword.value =
+                "";
+
+            newPassword.value =
+                "";
+
+            confirmPassword.value =
+                "";
+
+            changePasswordMessage.textContent =
+                "";
+
+            changePasswordMessage.className =
+                "";
+
+            changePasswordButtonSubmit.disabled =
+                false;
+
+            changePasswordButtonSubmit.textContent =
+                "UPDATE >";
+
+            changePasswordModal.classList.add(
+                "active"
+            );
+
+            setTimeout(
+                function() {
+
+                    currentPassword.focus();
+
+                },
+                100
+            );
+
+        }
+    );
+
+
+    cancelChangePassword.addEventListener(
+        "click",
+        function() {
+
+            closeChangePasswordModal();
+
+        }
+    );
+
+
+    changePasswordModal.addEventListener(
+        "click",
+        function(event) {
+
+            if (
+                event.target ===
+                changePasswordModal
+            ) {
+
+                closeChangePasswordModal();
+
+            }
+
+        }
+    );
+
+
+    function closeChangePasswordModal() {
+
+        changePasswordModal.classList.remove(
+            "active"
+        );
+
+
+        currentPassword.value =
+            "";
+
+        newPassword.value =
+            "";
+
+        confirmPassword.value =
+            "";
+
+        changePasswordMessage.textContent =
+            "";
+
+        changePasswordMessage.className =
+            "";
+
+        changePasswordButtonSubmit.disabled =
+            false;
+
+        changePasswordButtonSubmit.textContent =
+            "UPDATE >";
+
+    }
+
+
+    changePasswordButtonSubmit.addEventListener(
+        "click",
+        changeUserPassword
+    );
+
+
+    [
+        currentPassword,
+        newPassword,
+        confirmPassword
+    ].forEach(
+        function(input) {
+
+            input.addEventListener(
+                "keydown",
+                function(event) {
+
+                    if (
+                        event.key ===
+                        "Enter"
+                    ) {
+
+                        event.preventDefault();
+
+                        changeUserPassword();
+
+                    }
+
+                }
+            );
+
+        }
+    );
+
+
+    async function changeUserPassword() {
+
+        if (isLoggingOut) {
+
+            return;
+
+        }
+
+
+        const current =
+            currentPassword.value;
+
+
+        const newPass =
+            newPassword.value;
+
+
+        const confirm =
+            confirmPassword.value;
+
+
+        if (!current) {
+
+            showChangePasswordMessage(
+                "CURRENT PASSWORD IS REQUIRED.",
+                "error"
+            );
+
+            currentPassword.focus();
+
+            return;
+
+        }
+
+
+        if (!newPass) {
+
+            showChangePasswordMessage(
+                "NEW PASSWORD IS REQUIRED.",
+                "error"
+            );
+
+            newPassword.focus();
+
+            return;
+
+        }
+
+
+        if (newPass.length < 8) {
+
+            showChangePasswordMessage(
+                "NEW PASSWORD MUST CONTAIN AT LEAST 8 CHARACTERS.",
+                "error"
+            );
+
+            newPassword.focus();
+
+            return;
+
+        }
+
+
+        if (newPass !== confirm) {
+
+            showChangePasswordMessage(
+                "PASSWORD CONFIRMATION DOES NOT MATCH.",
+                "error"
+            );
+
+            confirmPassword.focus();
+
+            return;
+
+        }
+
+
+        if (current === newPass) {
+
+            showChangePasswordMessage(
+                "NEW PASSWORD MUST BE DIFFERENT FROM CURRENT PASSWORD.",
+                "error"
+            );
+
+            newPassword.focus();
+
+            return;
+
+        }
+
+
+        changePasswordButtonSubmit.disabled =
+            true;
+
+        changePasswordButtonSubmit.textContent =
+            "UPDATING...";
+
+
+        try {
+
+            const response =
+                await fetch(
+                    "/api/change-password",
+                    {
+
+                        method:
+                            "POST",
+
+                        headers:
+                            {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                        credentials:
+                            "same-origin",
+
+                        body:
+                            JSON.stringify({
+
+                                current_password:
+                                    current,
+
+                                new_password:
+                                    newPass
+
+                            })
+
+                    }
+                );
+
+
+            let data =
+                {};
+
+            try {
+
+                data =
+                    await response.json();
+
+            } catch (
+                jsonError
+            ) {
+
+                data =
+                    {};
+
+            }
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    data.message ||
+                    "PASSWORD UPDATE FAILED."
+                );
+
+            }
+
+
+            showChangePasswordMessage(
+                data.message ||
+                "PASSWORD UPDATED SUCCESSFULLY.",
+                "success"
+            );
+
+
+            currentPassword.value =
+                "";
+
+            newPassword.value =
+                "";
+
+            confirmPassword.value =
+                "";
+
+
+            setTimeout(
+                function() {
+
+                    closeChangePasswordModal();
+
+                },
+                1500
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                "Change password error:",
+                error
+            );
+
+
+            showChangePasswordMessage(
+                error.message ||
+                "UNABLE TO UPDATE PASSWORD.",
+                "error"
+            );
+
+
+            changePasswordButtonSubmit.disabled =
+                false;
+
+            changePasswordButtonSubmit.textContent =
+                "UPDATE >";
+
+        }
+
+    }
+
+
+    function showChangePasswordMessage(
+        text,
+        type
+    ) {
+
+        changePasswordMessage.textContent =
+            text;
+
+
+        changePasswordMessage.className =
+            type || "";
+
+    }
+
+
+    /* =========================================================
+       SEARCH
+    ========================================================= */
+
+    searchInput.addEventListener(
+        "input",
+        function() {
+
+            renderConversations(
+                searchInput.value.trim()
+            );
+
+        }
+    );
+
+
+    /* =========================================================
+       INPUT
+    ========================================================= */
+
+    messageInput.addEventListener(
+        "keydown",
+        function(event) {
+
+            if (
+                event.key ===
+                    "Enter" &&
+                !event.shiftKey
+            ) {
+
+                event.preventDefault();
+
+
+                sendMessage();
+
+            }
+
+        }
+    );
+
+
+    sendButton.addEventListener(
+        "click",
+        sendMessage
+    );
+
+
+    /* =========================================================
+       ESCAPE KEY
+       ---------------------------------------------------------
+       Priority:
+       1. Close Change Password modal
+       2. Close New Chat modal
+       3. Close active channel
+       4. Do nothing
+    ========================================================= */
+
+    document.addEventListener(
+        "keydown",
+        function(event) {
+
+            if (
+                event.key !==
+                "Escape"
+            ) {
+
+                return;
+
+            }
+
+
+            /*
+             * CHANGE PASSWORD MODAL
+             */
+
+            if (
+                changePasswordModal.classList.contains(
+                    "active"
+                )
+            ) {
+
+                event.preventDefault();
+
+                closeChangePasswordModal();
+
+                return;
+
+            }
+
+
+            /*
+             * NEW CHAT MODAL
+             */
+
+            if (
+                newChatModal.classList.contains(
+                    "active"
+                )
+            ) {
+
+                event.preventDefault();
+
+                closeNewChatModal();
+
+                return;
+
+            }
+
+
+            /*
+             * ACTIVE CHAT
+             */
+
+            if (
+                currentReceiver
+            ) {
+
+                event.preventDefault();
+
+                closeActiveChat();
+
+                return;
+
+            }
+
+        }
+    );
+
+
+    /* =========================================================
+       MOBILE BACK
+    ========================================================= */
+
+    backButton.addEventListener(
+        "click",
+        function() {
+
+            closeActiveChat();
+
+        }
+    );
+
+
+    /* =========================================================
+       LOGOUT
+       ---------------------------------------------------------
+       IMPORTANT:
+       1. Prevent duplicate logout requests.
+       2. Mark logout as intentional.
+       3. Disconnect Socket.IO immediately.
+       4. Call server-side logout API.
+       5. Clear local channel state.
+       6. Redirect to login.
+    ========================================================= */
+
+    logoutButton.addEventListener(
+        "click",
+        async function() {
+
+            /*
+             * Prevent double click.
+             */
+
+            if (isLoggingOut) {
+
+                return;
+
+            }
+
+
+            isLoggingOut =
+                true;
+
+
+            /*
+             * Disable UI actions that could generate
+             * requests while logout is in progress.
+             */
+
+            logoutButton.disabled =
+                true;
+
+            newChatButton.disabled =
+                true;
+
+            changePasswordButton.disabled =
+                true;
+
+            messageInput.disabled =
+                true;
+
+            sendButton.disabled =
+                true;
+
+
+            logoutButton.textContent =
+                "…";
+
+
+            connectionText.textContent =
+                "TERMINATING SESSION...";
+
+
+            connectionDot.style.background =
+                "#ffd166";
+
+
+            /*
+             * IMPORTANT:
+             *
+             * This is the missing part from the previous
+             * version.
+             *
+             * disconnect() closes the active Socket.IO
+             * connection and, because this is an intentional
+             * client disconnect, Socket.IO will not continue
+             * reconnecting this socket.
+             */
+
+            try {
+
+                if (
+                    socket &&
+                    socket.connected
+                ) {
+
+                    socket.disconnect();
+
+                }
+
+            } catch (error) {
+
+                console.error(
+                    "Socket disconnect error:",
+                    error
+                );
+
+            }
+
+
+            /*
+             * Tell Flask to terminate the authenticated
+             * server-side session.
+             */
+
+            try {
+
+                await fetch(
+                    "/api/logout",
+                    {
+                        method:
+                            "POST",
+
+                        credentials:
+                            "same-origin",
+
+                        headers:
+                            {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                        cache:
+                            "no-store",
+
+                        keepalive:
+                            true
+                    }
+                );
+
+            } catch (error) {
+
+                /*
+                 * Even if the API request fails, we still
+                 * redirect because the local socket has already
+                 * been terminated and the browser session will
+                 * leave the chat page.
+                 */
+
+                console.error(
+                    "Logout error:",
+                    error
+                );
+
+            }
+
+
+            /*
+             * Remove the currently selected channel from
+             * local storage.
+             */
+
+            localStorage.removeItem(
+                storageKey
+            );
+
+
+            /*
+             * Redirect to login.
+             */
+
+            window.location.replace(
+                "/login"
+            );
+
+        }
+    );
+
+
+    /* =========================================================
+       HELPERS
+    ========================================================= */
+
+    function getInitials(
+        phone
+    ) {
+
+        const value =
+            String(phone);
+
+
+        if (
+            value.length >= 2
+        ) {
+
+            return value.slice(-2);
+
+        }
+
+
+        return "##";
+
+    }
+
+
+    function formatTime(
+        timestamp
+    ) {
+
+        if (!timestamp) {
+
+            return "";
+
+        }
+
+
+        const date =
+            new Date(
+                timestamp
+            );
+
+
+        if (
+            Number.isNaN(
+                date.getTime()
+            )
+        ) {
+
+            return "";
+
+        }
+
+
+        return date.toLocaleTimeString(
+            [],
+            {
+                hour:
+                    "2-digit",
+
+                minute:
+                    "2-digit"
+            }
+        );
+
+    }
+
+
+    function formatDate(
+        timestamp
+    ) {
+
+        if (!timestamp) {
+
+            return "UNKNOWN DATE";
+
+        }
+
+
+        const date =
+            new Date(
+                timestamp
+            );
+
+
+        if (
+            Number.isNaN(
+                date.getTime()
+            )
+        ) {
+
+            return "UNKNOWN DATE";
+
+        }
+
+
+        const today =
+            new Date();
+
+
+        const yesterday =
+            new Date();
+
+
+        yesterday.setDate(
+            yesterday.getDate() - 1
+        );
+
+
+        if (
+            date.toDateString() ===
+            today.toDateString()
+        ) {
+
+            return "TODAY";
+
+        }
+
+
+        if (
+            date.toDateString() ===
+            yesterday.toDateString()
+        ) {
+
+            return "YESTERDAY";
+
+        }
+
+
+        return date.toLocaleDateString(
+            [],
+            {
+                day:
+                    "2-digit",
+
+                month:
+                    "2-digit",
+
+                year:
+                    "numeric"
+            }
+        );
+
+    }
+
+
+    function getStatusText(
+        message
+    ) {
+
+        if (
+            message.status ===
+            "read"
+        ) {
+
+            return "READ";
+
+        }
+
+
+        if (
+            message.status ===
+            "delivered"
+        ) {
+
+            return "DELIVERED";
+
+        }
+
+
+        if (
+            message.status ===
+            "sent"
+        ) {
+
+            return "SENT";
+
+        }
+
+
+        return "PENDING";
+
+    }
+
+
+    function scrollMessages() {
+
+        setTimeout(
+            function() {
+
+                messagesContainer.scrollTop =
+                    messagesContainer.scrollHeight;
+
+            },
+            20
+        );
+
+    }
+
+
+</script>
+
+
+</body>
+
+</html>

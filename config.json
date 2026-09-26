@@ -1,0 +1,10 @@
+{
+    "server": {
+        "host": "192.168.1.9",
+        "port": 5000,
+        "debug": true
+    },
+    "database": {
+        "path": "database/chat.db"
+    }
+}
