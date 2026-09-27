@@ -46,6 +46,8 @@ pip install flask flask-sqlalchemy flask-socketio werkzeug
 
 cd LAN-CHAT\server
 venv\Scripts\activate
+
+or source venv/bin/activate
 python app.py
 
 

@@ -1,2 +1,0 @@
-# CHAT
-CHAT Project
